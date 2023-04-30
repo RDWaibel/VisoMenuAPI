@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Data.SqlClient;
 using System.Linq;
@@ -252,6 +253,85 @@ namespace VisoMenuAPI
                 }
             }
             return theItems;
+        }
+
+        public async Task<MenuItems> rtn_MenuItem(int _itemID, ILogger logger)
+        {
+            SqlCommand cmd = new SqlCommand();
+            MenuItems item = new MenuItems();
+            logger.LogInformation("Looking for the item information");
+            using (SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                await conn.OpenAsync();
+                cmd.Connection = conn;
+                cmd.CommandText = "GetSingleItem";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ItemID", _itemID);
+                try
+                {
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                    if (rdr.HasRows)
+                    {
+                        rdr.Read();
+                        item.MenuItemID = rdr.GetInt32(0);
+                        item.SubmenuID = rdr.GetInt32(1);
+                        item.sortOrder = rdr.GetInt32(2);
+                        item.displayName = rdr.GetString(3);
+                        if(rdr[4] == DBNull.Value)
+                        {
+                            item.description = "";
+                        }
+                        else
+                        {
+                            item.description = rdr.GetString(4);
+                        }
+                        item.price = rdr.GetString(5);
+                        item.imagePath = rdr.GetString(6);
+                        rdr.Close();
+                    }
+                    else
+                    {
+                        logger.LogError($"Item {_itemID} was not found!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "save_Contact_Us");
+                }
+                await conn.CloseAsync();
+            }
+            return item;
+        }
+
+        public async Task<bool> save_Contact_Us(Contact_Us contact, ILogger logger)
+        {
+            SqlCommand cmd = new SqlCommand();
+            bool resultOfCall = false;
+            logger.LogInformation("saving the contact us information");
+            using(SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                await conn.OpenAsync();
+                cmd.CommandText = "Add_ContactUs";
+                cmd.Connection = conn;
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@ContactName", contact.ContactName);
+                cmd.Parameters.AddWithValue("@Email", contact.email);
+                cmd.Parameters.AddWithValue("@Message", contact.message);
+                cmd.Parameters.AddWithValue("@LocationID", contact.LocationID);
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                    resultOfCall = true;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "save_Contact_Us");
+                    resultOfCall= false;
+                }
+                conn.Close ();
+
+            }
+            return resultOfCall;    
         }
     }
 }

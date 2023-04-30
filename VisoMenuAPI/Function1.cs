@@ -16,6 +16,7 @@ namespace VisoMenuAPI
 {
     public static class VisoMenu_API
     {
+        [Disable]
         [FunctionName("GetClientInfo")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "{clientID}")] HttpRequest req,
@@ -142,6 +143,56 @@ namespace VisoMenuAPI
             {
                 log.LogError("No submenuid provided.");
                 return new BadRequestErrorMessageResult("unable to process request");
+            }
+        }
+
+        [FunctionName("GetSingleItem")]
+        public static async Task<IActionResult> GetSingleItem(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "item/{inItemID}")] HttpRequest req,
+            int inItemID, ILogger log)
+        {
+            log.LogInformation("getting a single item from database");
+            sql_Procedures dta = new sql_Procedures();
+            MenuItems theItem = new MenuItems();
+            if(inItemID > 0)
+            {
+                theItem = await dta.rtn_MenuItem(inItemID, log);
+                string jsonDta = JsonConvert.SerializeObject(theItem);
+                string responseMessage = string.IsNullOrEmpty(jsonDta)
+                    ? "This HTTP triggered function executed successfully, however, no data was found."
+                    : $"{jsonDta}";
+                return new OkObjectResult(responseMessage);
+            }
+            else
+            {
+                log.LogError("No item id provided.");
+                return new BadRequestErrorMessageResult("unable to process request");
+            }
+        }
+
+        [FunctionName("ContactUs")]
+        public static async Task<IActionResult> ContactUs(
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "contact")] HttpRequest req, ILogger log)
+        {
+            log.LogInformation("Saving contact us info");
+            sql_Procedures dta = new sql_Procedures();
+            Contact_Us myclass = await System.Text.Json.JsonSerializer.DeserializeAsync<Contact_Us>(req.Body);
+
+            try
+            {
+                if(await dta.save_Contact_Us(myclass, log))
+                {
+                    return new OkResult();
+                }
+                else
+                {
+                    return new BadRequestErrorMessageResult("Unable to save data");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Save contact us");
+                return new BadRequestErrorMessageResult("Unable to save data");
             }
         }
     }
