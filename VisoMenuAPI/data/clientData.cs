@@ -54,6 +54,6 @@ namespace VisoMenuAPI.data
         public string ContactName { get; set; }
         public string email { get; set; }
         public string message { get; set; }
-        public int LocationID { get; set; }
+        public string LocationID { get; set; }
     }
 }

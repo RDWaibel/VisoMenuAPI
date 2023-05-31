@@ -310,16 +310,15 @@ namespace VisoMenuAPI
             logger.LogInformation("saving the contact us information");
             using(SqlConnection conn = new SqlConnection(cnSQL))
             {
-                await conn.OpenAsync();
-                cmd.CommandText = "Add_ContactUs";
+                string sSQL = $"Add_ContactUs '{contact.ContactName}', '{contact.email}', '{contact.message}', {contact.LocationID}";
+                int locID = int.Parse(contact.LocationID.ToString());
+                conn.Open();
+                logger.LogInformation("SQL connection open");
+                cmd.CommandText = sSQL;
                 cmd.Connection = conn;
-                cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@ContactName", contact.ContactName);
-                cmd.Parameters.AddWithValue("@Email", contact.email);
-                cmd.Parameters.AddWithValue("@Message", contact.message);
-                cmd.Parameters.AddWithValue("@LocationID", contact.LocationID);
                 try
                 {
+                    logger.LogInformation($"Sending to SQL {sSQL}");
                     await cmd.ExecuteNonQueryAsync();
                     resultOfCall = true;
                 }

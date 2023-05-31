@@ -16,8 +16,8 @@ namespace VisoMenuAPI
 {
     public static class VisoMenu_API
     {
-        [Disable]
-        [FunctionName("GetClientInfo")]
+        //[Disable]
+        [FunctionName("PullClinetInfoOnly")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "{clientID}")] HttpRequest req,
             int clientID, ILogger log)
@@ -40,8 +40,8 @@ namespace VisoMenuAPI
             return new OkObjectResult(responseMessage);
         }
 
-        [Disable]
-        [FunctionName("GetMenuData")]
+        //[Disable]
+        [FunctionName("GetLocationMenuData")]
         public static async Task<IActionResult> GetMenuData(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Location_V1/{inLocid}")] HttpRequest req,
             int inLocid, ILogger log)
@@ -180,7 +180,8 @@ namespace VisoMenuAPI
 
             try
             {
-                if(await dta.save_Contact_Us(myclass, log))
+                log.LogInformation("Sending to SQL");
+                if (await dta.save_Contact_Us(myclass, log))
                 {
                     return new OkResult();
                 }
