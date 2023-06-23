@@ -47,6 +47,7 @@ namespace VisoMenuAPI.data
         public string StateName { get; set; }
         public string ZipCode { get; set; }
         public string Telephone { get; set; }
+        public string theme_name { get; set; }
     }
 
     public class Contact_Us

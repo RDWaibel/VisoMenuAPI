@@ -15,6 +15,7 @@ namespace VisoMenuAPI.data
         public string? AddtionalText2 { get; set; }
         public int LocationID { get; set; }
         public string LocationName { get; set; }
+        public string theme_name { get; set; }
     }
 
     public class menuData
@@ -39,6 +40,7 @@ namespace VisoMenuAPI.data
         public int menuSort { get; set; }
         public int subSort { get; set; }
         public int itemSort { get; set; }
+        public string theme_name { get; set; }
     }
 
     public class Menus

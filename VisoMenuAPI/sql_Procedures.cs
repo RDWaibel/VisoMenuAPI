@@ -106,6 +106,11 @@ namespace VisoMenuAPI
             return _client;
         }
 
+        /// <summary>
+        /// Return FULL menu for Location
+        /// </summary>
+        /// <param name="LocationID"></param>
+        /// <returns></returns>
         public async Task<List<vw_LocationsMenu>> GetLocationMenu(int LocationID)
         {
             string sql = $"sp_LocationMenu {LocationID}";
@@ -134,6 +139,7 @@ namespace VisoMenuAPI
                         a.menuSort = rdr.GetInt32(10);
                         a.subSort = rdr.GetInt32(11);
                         a.itemSort = rdr.GetInt32(12);
+                        a.theme_name = rdr.GetString(13);
                         theMenu.Add(a);
                     }
                 }
@@ -144,6 +150,12 @@ namespace VisoMenuAPI
             return theMenu;
         }
 
+        /// <summary>
+        /// returns the top level menues for the location
+        /// </summary>
+        /// <param name="_locationID"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
         public async Task<List<locationMenus>> rtn_LocationMenus(int _locationID, ILogger logger)
         {
             logger.LogInformation("Running LocationMenus");
@@ -171,6 +183,7 @@ namespace VisoMenuAPI
                             menus.AddtionalText1 = rdr.GetString(2);
                             menus.AddtionalText2 = rdr.GetString(3);
                             menus.SortOrder = rdr.GetInt32(4);
+                            menus.theme_name = rdr.GetString(5);
                             locMenus.Add(menus);
                         }
                     }

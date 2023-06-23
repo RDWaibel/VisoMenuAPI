@@ -46,6 +46,7 @@ namespace VisoMenuAPI
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Location_V1/{inLocid}")] HttpRequest req,
             int inLocid, ILogger log)
         {
+            //FULL menu for location
             sql_Procedures dta = new sql_Procedures();
             int LocID = inLocid;
 
@@ -72,6 +73,7 @@ namespace VisoMenuAPI
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Location/{inLocid}")] HttpRequest req,
             int inLocid, ILogger log)
         {
+            //Top level menues only
             log.LogInformation("Running getLocationMenu");
             sql_Procedures dta = new sql_Procedures();
             int LocID = inLocid;
