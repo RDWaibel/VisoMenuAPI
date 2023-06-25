@@ -127,7 +127,7 @@ namespace VisoMenuAPI
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "subMenu/{inSubMenuID}")] HttpRequest req,
             int inSubMenuID, ILogger log)
         {
-            log.LogInformation("Running getItems");
+            log.LogInformation("Running GetItems API");
             sql_Procedures dta = new sql_Procedures();
             int menuID = inSubMenuID;
 
@@ -172,7 +172,29 @@ namespace VisoMenuAPI
             }
         }
 
-        [FunctionName("ContactUs")]
+        [FunctionName("Recommendations")]
+        public static async Task<IActionResult> GetRecommendations(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "recommend/{locid}/{inItemID}")]
+        HttpRequest req,int locid, int inItemID, ILogger log)
+            {
+            log.LogInformation("Getting the recommendations");
+            sql_Procedures dta = new sql_Procedures();
+            List<MenuItems> theItems = new List<MenuItems>();
+            if (inItemID > 0)
+            {
+                theItems = await dta.rtn_Recommendations(locid, inItemID, log);
+                string jsonDta = JsonConvert.SerializeObject(theItems);
+                string responseMessage = string.IsNullOrEmpty(jsonDta)
+                    ? "This HTTP triggered function executed successfully, however, no data was found."
+                    : $"{jsonDta}";
+                return new OkObjectResult(responseMessage);
+            }
+            else
+            {
+                log.LogError("No item id provided.");
+                return new BadRequestErrorMessageResult("unable to process request");
+            }
+        }
         public static async Task<IActionResult> ContactUs(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "contact")] HttpRequest req, ILogger log)
         {

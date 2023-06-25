@@ -351,5 +351,54 @@ namespace VisoMenuAPI
             }
             return resultOfCall;    
         }
+        /// <summary>
+        /// Return a simple list of three recommendations
+        /// </summary>
+        /// <param name="_locID"></param>
+        /// <param name="_menuItemID"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
+        public async Task<List<MenuItems>> rtn_Recommendations (int _locID, int _menuItemID, ILogger logger)
+        {
+            logger.LogInformation("Running sp_LocationRecommendations");
+            string sql = $"sp_LocationRecommendations";
+            List<MenuItems> theItems = new List<MenuItems>();
+            using (SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                conn.Open();
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@LocationID", _locID);
+                cmd.Parameters.AddWithValue("@itemID", _menuItemID);
+                try
+                {
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            MenuItems theItem = new MenuItems();
+                            theItem.MenuItemID = rdr.GetInt32(0);
+                            theItem.SubmenuID = rdr.GetInt32(1);
+                            theItem.sortOrder = rdr.GetInt32(2);
+                            theItem.displayName = rdr.GetString(3);
+                            theItem.description = rdr.GetString(4);
+                            theItem.price = rdr.GetString(5);
+                            theItem.imagePath = rdr.GetString(6);
+                            theItems.Add(theItem);
+                        }
+                    }
+                    rdr.Close();
+                    conn.Close();
+                    logger.LogInformation("Menu Items loaded");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "rtn_MenuItems");
+                }
+            }
+            return theItems;
+        }
     }
 }
