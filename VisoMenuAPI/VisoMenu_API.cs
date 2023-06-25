@@ -62,7 +62,7 @@ namespace VisoMenuAPI
             }
             else
             {
-                
+
                 return new BadRequestErrorMessageResult("unable to process request");
             }
         }
@@ -156,7 +156,7 @@ namespace VisoMenuAPI
             log.LogInformation("getting a single item from database");
             sql_Procedures dta = new sql_Procedures();
             MenuItems theItem = new MenuItems();
-            if(inItemID > 0)
+            if (inItemID > 0)
             {
                 theItem = await dta.rtn_MenuItem(inItemID, log);
                 string jsonDta = JsonConvert.SerializeObject(theItem);
@@ -175,23 +175,23 @@ namespace VisoMenuAPI
         [FunctionName("Recommendations")]
         public static async Task<IActionResult> GetRecommendations(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "recommend/{locid}/{inItemID}")]
-        HttpRequest req,int locid, int inItemID, ILogger log)
-            {
+        HttpRequest req, int locid, int inItemID, ILogger log)
+        {
             log.LogInformation("Getting the recommendations");
             sql_Procedures dta = new sql_Procedures();
             List<MenuItems> theItems = new List<MenuItems>();
-            if (inItemID > 0)
+            if (inItemID > 0 && locid > 0)
             {
                 theItems = await dta.rtn_Recommendations(locid, inItemID, log);
                 string jsonDta = JsonConvert.SerializeObject(theItems);
                 string responseMessage = string.IsNullOrEmpty(jsonDta)
-                    ? "This HTTP triggered function executed successfully, however, no data was found."
+                    ? "This HTTP triggered function executed successfully, however, no recommendations were found."
                     : $"{jsonDta}";
                 return new OkObjectResult(responseMessage);
             }
             else
             {
-                log.LogError("No item id provided.");
+                log.LogError("No location or item id provided.");
                 return new BadRequestErrorMessageResult("unable to process request");
             }
         }
