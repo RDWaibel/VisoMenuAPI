@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using VisoMenuAPI.data;
 
 namespace VisoMenuAPI
@@ -399,6 +400,72 @@ namespace VisoMenuAPI
                 }
             }
             return theItems;
+        }
+        public async Task UpdateMenuItemViewed(int locationID, int _menuItemID, ILogger logger)
+        {
+
+            //sp_UpdateViewedAd
+            string cmdText = "UpdateItemViewed";
+            List<LocationAds> la = new List<LocationAds>();
+            SqlCommand cmd = new SqlCommand();
+
+            cmd.CommandText = cmdText;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@locationID", locationID);
+            cmd.Parameters.AddWithValue("@menuitemid", _menuItemID);
+            using (SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                conn.Open();
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+            }
+        }
+
+        public async Task<List<LocationAds>> rtn_LocationAds(int locationID, ILogger logger)
+        {
+            string cmdText = "sp_PullLocationBanners";
+            List<LocationAds> la = new List<LocationAds>();
+            SqlCommand cmd = new SqlCommand();
+
+            cmd.CommandText = cmdText;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@LocationID", locationID);
+            using(SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                conn.Open();
+                SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    LocationAds laItem = new LocationAds();
+                    laItem.locationID = locationID;
+                    laItem.adID = reader.GetInt32(1);
+                    laItem.ad_BannerPath = reader.GetString(2);
+                    laItem.ad_ImagePath = reader.GetString(3);
+                    la.Add(laItem);
+                }
+                conn.Close();
+            }
+            return la;
+        }
+
+        public async Task UpdateAdViewed( int locationID, int _adID, ILogger logger)
+        {
+            
+            //sp_UpdateViewedAd
+            string cmdText = "sp_UpdateViewedAd";
+            List<LocationAds> la = new List<LocationAds>();
+            SqlCommand cmd = new SqlCommand();
+
+            cmd.CommandText = cmdText;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@LocationID", locationID);
+            cmd.Parameters.AddWithValue("@AdID", _adID);
+            using (SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                conn.Open();
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+            }
         }
     }
 }

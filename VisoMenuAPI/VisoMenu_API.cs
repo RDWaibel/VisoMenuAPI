@@ -17,7 +17,7 @@ namespace VisoMenuAPI
     public static class VisoMenu_API
     {
         //[Disable]
-        [FunctionName("PullClinetInfoOnly")]
+        [FunctionName("PullClientInfoOnly")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "{clientID}")] HttpRequest req,
             int clientID, ILogger log)
@@ -175,7 +175,7 @@ namespace VisoMenuAPI
         [FunctionName("Recommendations")]
         public static async Task<IActionResult> GetRecommendations(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "recommend/{locid}/{inItemID}")]
-        HttpRequest req, int locid, int inItemID, ILogger log)
+            HttpRequest req, int locid, int inItemID, ILogger log)
         {
             log.LogInformation("Getting the recommendations");
             sql_Procedures dta = new sql_Procedures();
@@ -195,6 +195,27 @@ namespace VisoMenuAPI
                 return new BadRequestErrorMessageResult("unable to process request");
             }
         }
+        [FunctionName("MenuItemViewed")]
+        public static async Task<IActionResult> ItemViewed(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "itemViewed/{locid}/{inItemID}")] 
+            HttpRequest req, int locid, int inItemID, ILogger log)
+        {
+            log.LogInformation("A menu item was viewed");
+            sql_Procedures dta = new sql_Procedures();
+            if (inItemID > 0 && locid > 0)
+            {
+                await dta.UpdateMenuItemViewed(locid, inItemID, log);
+                return new OkResult();
+            }
+            else
+            {
+                log.LogError("No location or item id provided.");
+                return new BadRequestErrorMessageResult("No location or item id provided, unable to process request");
+            }
+
+        }
+
+        [FunctionName("ContactUs")]
         public static async Task<IActionResult> ContactUs(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "contact")] HttpRequest req, ILogger log)
         {
