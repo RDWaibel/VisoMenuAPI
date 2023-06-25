@@ -391,11 +391,11 @@ namespace VisoMenuAPI
                     }
                     rdr.Close();
                     conn.Close();
-                    logger.LogInformation("Menu Items loaded");
+                    logger.LogInformation("Recommendations loaded");
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "rtn_MenuItems");
+                    logger.LogError(ex, "rtn_Recommendations");
                 }
             }
             return theItems;
