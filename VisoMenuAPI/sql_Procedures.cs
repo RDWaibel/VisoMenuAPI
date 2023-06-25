@@ -226,6 +226,12 @@ namespace VisoMenuAPI
             }
             return theSubMenus;
         }
+        /// <summary>
+        /// Pulls all of the items based on the submenuID
+        /// </summary>
+        /// <param name="_subMenuID"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
         public async Task<List<MenuItems>> rtn_MenuItems(int _subMenuID, ILogger logger)
         {
             logger.LogInformation("Running rtn_MenuItems");
