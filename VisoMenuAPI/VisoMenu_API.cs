@@ -171,7 +171,14 @@ namespace VisoMenuAPI
                 return new BadRequestErrorMessageResult("unable to process request");
             }
         }
-
+        /// <summary>
+        /// return recommendations
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="locid"></param>
+        /// <param name="inItemID"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
         [FunctionName("Recommendations")]
         public static async Task<IActionResult> GetRecommendations(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "recommend/{locid}/{inItemID}")]
@@ -195,6 +202,14 @@ namespace VisoMenuAPI
                 return new BadRequestErrorMessageResult("unable to process request");
             }
         }
+        /// <summary>
+        /// Update if the user opens the big item image
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="locid"></param>
+        /// <param name="inItemID"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
         [FunctionName("MenuItemViewed")]
         public static async Task<IActionResult> ItemViewed(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "itemViewed/{locid}/{inItemID}")] 
@@ -214,7 +229,12 @@ namespace VisoMenuAPI
             }
 
         }
-
+        /// <summary>
+        /// update the contact us table.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
         [FunctionName("ContactUs")]
         public static async Task<IActionResult> ContactUs(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "contact")] HttpRequest req, ILogger log)

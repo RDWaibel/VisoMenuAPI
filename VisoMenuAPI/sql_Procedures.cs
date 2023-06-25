@@ -401,6 +401,13 @@ namespace VisoMenuAPI
             }
             return theItems;
         }
+        /// <summary>
+        /// Update the table when the item's image is displayed
+        /// </summary>
+        /// <param name="locationID"></param>
+        /// <param name="_menuItemID"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
         public async Task UpdateMenuItemViewed(int locationID, int _menuItemID, ILogger logger)
         {
 
@@ -420,6 +427,8 @@ namespace VisoMenuAPI
                 conn.Close();
             }
         }
+
+        #region "Working with the ads"
 
         public async Task<List<LocationAds>> rtn_LocationAds(int locationID, ILogger logger)
         {
@@ -467,5 +476,6 @@ namespace VisoMenuAPI
                 conn.Close();
             }
         }
+        #endregion
     }
 }
