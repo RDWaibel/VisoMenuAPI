@@ -6,6 +6,20 @@ using System.Threading.Tasks;
 
 namespace VisoMenuAPI.data
 {
+    public class locationMenuSubMenu
+    {
+        public int MenuID { get; set; }
+        public string DisplayText { get; set; }
+
+        public string AddtionalText1 { get; set; }
+        public string AddtionalText2 { get; set; }
+        public int menuSort { get; set; }
+        public int LocationID { get; set; }
+        public string LocationName { get; set; }
+        public string theme_name { get; set; }
+        public string SubmenuText { get; set; }
+        public int SubMenuSort { get; set; }
+    }
     public class locationMenus
     {
         public int MenuID { get; set; }
@@ -40,7 +54,10 @@ namespace VisoMenuAPI.data
         public int menuSort { get; set; }
         public int subSort { get; set; }
         public int itemSort { get; set; }
+        public int MenuID { get; set; } 
         public string theme_name { get; set; }
+        public int MenuItemID { get; set; }
+        public int SubmenuID { get; set; }
     }
 
     public class Menus

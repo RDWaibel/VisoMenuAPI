@@ -41,14 +41,25 @@ namespace VisoMenuAPI
         }
 
         //[Disable]
-        [FunctionName("GetLocationMenuData")]
+        [FunctionName("ReturnLocationFullMenu")]
         public static async Task<IActionResult> GetMenuData(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Location_V1/{inLocid}")] HttpRequest req,
-            int inLocid, ILogger log)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetLocationMenuData/{inLocid}")] HttpRequest req,
+            string inLocid, ILogger log)
         {
             //FULL menu for location
             sql_Procedures dta = new sql_Procedures();
-            int LocID = inLocid;
+            int LocID = 0;
+            try
+            {
+                LocID = int.Parse(inLocid);
+            }
+            catch 
+            {
+                return new BadRequestErrorMessageResult($"Unable to process request {inLocid}");
+        
+            }
+
+            
 
             if (LocID > 0)
             {
@@ -68,7 +79,7 @@ namespace VisoMenuAPI
         }
 
 
-        [FunctionName("GetMenu")]
+        [FunctionName("ReturnLocationMenus")]
         public static async Task<IActionResult> GetLocationMenu(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Location/{inLocid}")] HttpRequest req,
             int inLocid, ILogger log)
@@ -80,7 +91,7 @@ namespace VisoMenuAPI
 
             if (LocID > 0)
             {
-                List<locationMenus> locMenu = await dta.rtn_LocationMenus(LocID, log);
+                List<locationMenuSubMenu> locMenu = await dta.rtn_LocationMenus(LocID, log);
 
                 string jsonDta = JsonConvert.SerializeObject(locMenu);
                 string responseMessage = string.IsNullOrEmpty(jsonDta)
@@ -95,7 +106,7 @@ namespace VisoMenuAPI
             }
         }
 
-        [FunctionName("GetSubMenu")]
+        [FunctionName("ReturnSubMenu")]
         public static async Task<IActionResult> GetSubMenu(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Menu/{inMenuID}")] HttpRequest req,
             int inMenuID, ILogger log)

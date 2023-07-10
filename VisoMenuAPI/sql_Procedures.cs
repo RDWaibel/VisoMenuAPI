@@ -140,7 +140,10 @@ namespace VisoMenuAPI
                         a.menuSort = rdr.GetInt32(10);
                         a.subSort = rdr.GetInt32(11);
                         a.itemSort = rdr.GetInt32(12);
-                        a.theme_name = rdr.GetString(13);
+                        a.MenuID = rdr.GetInt32(13);
+                        a.theme_name = rdr.GetString(14);
+                        a.MenuItemID = rdr.GetInt32(15);
+                        a.SubmenuID = rdr.GetInt32(16);
                         theMenu.Add(a);
                     }
                 }
@@ -157,11 +160,11 @@ namespace VisoMenuAPI
         /// <param name="_locationID"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public async Task<List<locationMenus>> rtn_LocationMenus(int _locationID, ILogger logger)
+        public async Task<List<locationMenuSubMenu>> rtn_LocationMenus(int _locationID, ILogger logger)
         {
             logger.LogInformation("Running LocationMenus");
             string SQL = $"rtn_LocationMenu";
-            List<locationMenus> locMenus = new List<locationMenus>();
+            List<locationMenuSubMenu> locMenus = new List<locationMenuSubMenu>();
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
                 conn.Open();
@@ -176,15 +179,17 @@ namespace VisoMenuAPI
                     {
                         while (rdr.Read())
                         {
-                            locationMenus menus = new locationMenus();
+                            locationMenuSubMenu menus = new locationMenuSubMenu();
                             menus.LocationID = _locationID;
-                            menus.LocationName = rdr.GetString(6);
                             menus.MenuID = rdr.GetInt32(0);
+                            menus.LocationName = rdr.GetString(6);
                             menus.DisplayText = rdr.GetString(1);
                             menus.AddtionalText1 = rdr.GetString(2);
                             menus.AddtionalText2 = rdr.GetString(3);
-                            menus.SortOrder = rdr.GetInt32(4);
-                            menus.theme_name = rdr.GetString(5);
+                            menus.menuSort = rdr.GetInt32(4);
+                            menus.theme_name = rdr.GetString(7);
+                            menus.SubmenuText = rdr.GetString(8);
+                            menus.SubMenuSort = rdr.GetInt32(9);
                             locMenus.Add(menus);
                         }
                     }
@@ -442,6 +447,7 @@ namespace VisoMenuAPI
             using(SqlConnection conn = new SqlConnection(cnSQL))
             {
                 conn.Open();
+                cmd.Connection = conn;
                 SqlDataReader reader = await cmd.ExecuteReaderAsync();
                 while (reader.Read())
                 {
@@ -472,6 +478,7 @@ namespace VisoMenuAPI
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
                 conn.Open();
+                cmd.Connection = conn;
                 await cmd.ExecuteNonQueryAsync();
                 conn.Close();
             }

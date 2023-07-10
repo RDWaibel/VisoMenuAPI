@@ -46,7 +46,7 @@ namespace VisoMenuAPI
 
         [FunctionName("ViewedAd")]
         public static async Task<IActionResult> viewedAd(
-           [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ViewedAd/{inLocid}/{adID}")] HttpRequest req,
+           [HttpTrigger(AuthorizationLevel.Function, "get", Route = "ViewedAd/{inLocid}/{adID}")] HttpRequest req,
            int inLocid, int adID,  ILogger log
             )
         {
