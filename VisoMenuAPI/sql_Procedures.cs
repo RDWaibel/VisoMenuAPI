@@ -258,13 +258,14 @@ namespace VisoMenuAPI
                         while (rdr.Read())
                         {
                             MenuItems theItem = new MenuItems();
-                            theItem.MenuItemID = rdr.GetInt32(0);
-                            theItem.SubmenuID = rdr.GetInt32(1);
-                            theItem.sortOrder = rdr.GetInt32(2);
-                            theItem.displayName = rdr.GetString(3);
-                            theItem.description = rdr.GetString(4);
-                            theItem.price = rdr.GetString(5);
-                            theItem.imagePath = rdr.GetString(6);
+                            theItem.subMenuText = rdr.GetString(0);
+                            theItem.MenuItemID = rdr.GetInt32(1);
+                            theItem.SubmenuID = rdr.GetInt32(2);
+                            theItem.sortOrder = rdr.GetInt32(3);
+                            theItem.displayName = rdr.GetString(4);
+                            theItem.description = rdr.GetString(5);
+                            theItem.price = rdr.GetString(6);
+                            theItem.imagePath = rdr.GetString(7);
                             theItems.Add(theItem);
                         }
                     }

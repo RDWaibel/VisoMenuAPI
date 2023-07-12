@@ -87,5 +87,6 @@ namespace VisoMenuAPI.data
         public string? description { get; set; }
         public string? price { get; set; }
         public string? imagePath { get; set; }
+        public string subMenuText { get; set; }
     }
 }
