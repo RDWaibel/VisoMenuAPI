@@ -429,6 +429,7 @@ namespace VisoMenuAPI
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
                 conn.Open();
+                cmd.Connection = conn;
                 await cmd.ExecuteNonQueryAsync();
                 conn.Close();
             }
