@@ -43,27 +43,24 @@ namespace VisoMenuAPI
         //[Disable]
         [FunctionName("ReturnLocationFullMenu")]
         public static async Task<IActionResult> GetMenuData(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetLocationMenuData/{inLocid}")] HttpRequest req,
-            string inLocid, ILogger log)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetLocationMenuData/{locid}")] HttpRequest req,
+            string locid, ILogger log)
         {
             //FULL menu for location
             sql_Procedures dta = new sql_Procedures();
-            int LocID = 0;
+            Guid LocID;
             try
             {
-                LocID = int.Parse(inLocid);
+                LocID = Guid.Parse(locid);
             }
             catch 
             {
-                return new BadRequestErrorMessageResult($"Unable to process request {inLocid}");
+                return new BadRequestErrorMessageResult($"Unable to process request {locid}");
         
             }
-
-            
-
-            if (LocID > 0)
+            try
             {
-                List<vw_LocationsMenu> locMenu = await dta.GetLocationMenu(LocID);
+                List<vw_LocationsMenu> locMenu = await dta.GetLocationMenu(locid);
 
                 string jsonDta = JsonConvert.SerializeObject(locMenu);
                 string responseMessage = string.IsNullOrEmpty(jsonDta)
@@ -71,25 +68,26 @@ namespace VisoMenuAPI
                     : $"{jsonDta}";
                 return new OkObjectResult(responseMessage);
             }
-            else
+            catch
             {
-
-                return new BadRequestErrorMessageResult("unable to process request");
+                return new BadRequestErrorMessageResult($"Unable to process request {locid}");
             }
+
+
         }
 
 
         [FunctionName("ReturnLocationMenus")]
         public static async Task<IActionResult> GetLocationMenu(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Location/{inLocid}")] HttpRequest req,
-            int inLocid, ILogger log)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Location/{locid}")] HttpRequest req,
+            string locid, ILogger log)
         {
             //Top level menues only
             log.LogInformation("Running getLocationMenu");
             sql_Procedures dta = new sql_Procedures();
-            int LocID = inLocid;
+            Guid LocID = Guid.Parse(locid);
 
-            if (LocID > 0)
+            if (LocID != null)
             {
                 List<locationMenuSubMenu> locMenu = await dta.rtn_LocationMenus(LocID, log);
 
@@ -193,12 +191,13 @@ namespace VisoMenuAPI
         [FunctionName("Recommendations")]
         public static async Task<IActionResult> GetRecommendations(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "recommend/{locid}/{inItemID}")]
-            HttpRequest req, int locid, int inItemID, ILogger log)
+            HttpRequest req, string locid, int inItemID, ILogger log)
         {
             log.LogInformation("Getting the recommendations");
+            Guid testGuid;
             sql_Procedures dta = new sql_Procedures();
             List<MenuItems> theItems = new List<MenuItems>();
-            if (inItemID > 0 && locid > 0)
+            if (inItemID > 0 && Guid.TryParse(locid, out testGuid) )
             {
                 theItems = await dta.rtn_Recommendations(locid, inItemID, log);
                 string jsonDta = JsonConvert.SerializeObject(theItems);
@@ -224,13 +223,15 @@ namespace VisoMenuAPI
         [FunctionName("MenuItemViewed")]
         public static async Task<IActionResult> ItemViewed(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "itemViewed/{locid}/{inItemID}")] 
-            HttpRequest req, int locid, int inItemID, ILogger log)
+            HttpRequest req, string locid, int inItemID, ILogger log)
         {
             log.LogInformation("A menu item was viewed");
+            Guid testGuid;
+            testGuid = Guid.Parse(locid);
             sql_Procedures dta = new sql_Procedures();
-            if (inItemID > 0 && locid > 0)
+            if (inItemID > 0 && testGuid != null)
             {
-                await dta.UpdateMenuItemViewed(locid, inItemID, log);
+                await dta.UpdateMenuItemViewed(testGuid.ToString(), inItemID, log);
                 return new OkResult();
             }
             else

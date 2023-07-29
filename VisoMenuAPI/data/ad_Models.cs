@@ -8,7 +8,7 @@ namespace VisoMenuAPI.data
 {
     public class LocationAds
     {
-        public int locationID { get; set; }
+        public string locationGUID { get; set; }
         public int adID { get; set; }
         public string ad_BannerPath { get; set; }
         public string ad_ImagePath { get; set; }

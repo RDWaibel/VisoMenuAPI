@@ -1,13 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using VisoMenuAPI.data;
 
 namespace VisoMenuAPI
@@ -112,9 +107,9 @@ namespace VisoMenuAPI
         /// </summary>
         /// <param name="LocationID"></param>
         /// <returns></returns>
-        public async Task<List<vw_LocationsMenu>> GetLocationMenu(int LocationID)
+        public async Task<List<vw_LocationsMenu>> GetLocationMenu(string LocationID)
         {
-            string sql = $"sp_LocationMenu {LocationID}";
+            string sql = $"sp_LocationMenu '{LocationID}'";
             List<vw_LocationsMenu> theMenu = new List<vw_LocationsMenu>();
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
@@ -127,23 +122,25 @@ namespace VisoMenuAPI
                     while (rdr.Read())
                     {
                         vw_LocationsMenu a = new vw_LocationsMenu();
-                        a.LocationID = rdr.GetInt32(0);
+                        a.LocationID = rdr.GetString(0);
                         a.LocationName = rdr.GetString(1);
                         a.MenuText = rdr.GetString(2);
-                        a.LineOne = rdr.GetString(3);
-                        a.LineTwo = rdr.GetString(4);                        
-                        a.InnerMenu = rdr.GetString(5);
-                        a.ItemName = rdr.GetString(6);
-                        a.description = rdr.GetString(7);
-                        a.price = rdr.GetString(8);
-                        a.imagePath = rdr.GetString(9);
-                        a.menuSort = rdr.GetInt32(10);
-                        a.subSort = rdr.GetInt32(11);
-                        a.itemSort = rdr.GetInt32(12);
-                        a.MenuID = rdr.GetInt32(13);
-                        a.theme_name = rdr.GetString(14);
-                        a.MenuItemID = rdr.GetInt32(15);
-                        a.SubmenuID = rdr.GetInt32(16);
+                        a.menuLineOne = rdr.GetString(3);
+                        a.menuLineTwo = rdr.GetString(4);                        
+                        a.subMenu = rdr.GetString(5);
+                        a.submenuLineOne = rdr.GetString(6);
+                        a.submenuLineTwo =  rdr.GetString(7);
+                        a.ItemName = rdr.GetString(8);
+                        a.description = rdr.GetString(9);
+                        a.price = rdr.GetString(10);
+                        a.imagePath = rdr.GetString(11);
+                        a.menuSort = rdr.GetInt32(12);
+                        a.subSort = rdr.GetInt32(13);
+                        a.itemSort = rdr.GetInt32(14);
+                        a.MenuID = rdr.GetInt32(15);
+                        a.theme_name = rdr.GetString(16);
+                        a.MenuItemID = rdr.GetInt32(17);
+                        a.SubmenuID = rdr.GetInt32(18);
                         theMenu.Add(a);
                     }
                 }
@@ -160,7 +157,7 @@ namespace VisoMenuAPI
         /// <param name="_locationID"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public async Task<List<locationMenuSubMenu>> rtn_LocationMenus(int _locationID, ILogger logger)
+        public async Task<List<locationMenuSubMenu>> rtn_LocationMenus(Guid _locationID, ILogger logger)
         {
             logger.LogInformation("Running LocationMenus");
             string SQL = $"rtn_LocationMenu";
@@ -171,7 +168,7 @@ namespace VisoMenuAPI
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = SQL;
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@LocationID", _locationID);
+                cmd.Parameters.AddWithValue("@LocationID", _locationID.ToString());
                 try
                 {
                     SqlDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -180,16 +177,18 @@ namespace VisoMenuAPI
                         while (rdr.Read())
                         {
                             locationMenuSubMenu menus = new locationMenuSubMenu();
-                            menus.LocationID = _locationID;
+                            //menus.LocationID = _locationID;
                             menus.MenuID = rdr.GetInt32(0);
-                            menus.LocationName = rdr.GetString(6);
                             menus.DisplayText = rdr.GetString(1);
                             menus.AddtionalText1 = rdr.GetString(2);
                             menus.AddtionalText2 = rdr.GetString(3);
                             menus.menuSort = rdr.GetInt32(4);
-                            menus.theme_name = rdr.GetString(7);
-                            menus.SubmenuText = rdr.GetString(8);
-                            menus.SubMenuSort = rdr.GetInt32(9);
+                            menus.LocationName = rdr.GetString(5);
+                            menus.theme_name = rdr.GetString(6);
+                            menus.SubmenuText = rdr.GetString(7);
+                            menus.SubMenuSort = rdr.GetInt32(8);
+                            menus.subText1 = rdr.GetString(9);
+                            menus.subText2 = rdr.GetString(10);
                             locMenus.Add(menus);
                         }
                     }
@@ -365,7 +364,7 @@ namespace VisoMenuAPI
         /// <param name="_menuItemID"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public async Task<List<MenuItems>> rtn_Recommendations (int _locID, int _menuItemID, ILogger logger)
+        public async Task<List<MenuItems>> rtn_Recommendations (string _locID, int _menuItemID, ILogger logger)
         {
             logger.LogInformation("Running sp_LocationRecommendations");
             string sql = $"sp_LocationRecommendations";
@@ -410,11 +409,11 @@ namespace VisoMenuAPI
         /// <summary>
         /// Update the table when the item's image is displayed
         /// </summary>
-        /// <param name="locationID"></param>
+        /// <param name="locationID">GUID string</param>
         /// <param name="_menuItemID"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public async Task UpdateMenuItemViewed(int locationID, int _menuItemID, ILogger logger)
+        public async Task UpdateMenuItemViewed(string locationID, int _menuItemID, ILogger logger)
         {
 
             //sp_UpdateViewedAd
@@ -437,8 +436,11 @@ namespace VisoMenuAPI
 
         #region "Working with the ads"
 
-        public async Task<List<LocationAds>> rtn_LocationAds(int locationID, ILogger logger)
+        public async Task<List<LocationAds>> rtn_LocationAds(string locationID, ILogger logger)
         {
+            string bannerPath = System.Environment.GetEnvironmentVariable("bannerPath"); 
+            string imagePath = System.Environment.GetEnvironmentVariable("imagePath");
+
             string cmdText = "sp_PullLocationBanners";
             List<LocationAds> la = new List<LocationAds>();
             SqlCommand cmd = new SqlCommand();
@@ -454,10 +456,10 @@ namespace VisoMenuAPI
                 while (reader.Read())
                 {
                     LocationAds laItem = new LocationAds();
-                    laItem.locationID = locationID;
+                    laItem.locationGUID = locationID;
                     laItem.adID = reader.GetInt32(1);
-                    laItem.ad_BannerPath = reader.GetString(2);
-                    laItem.ad_ImagePath = reader.GetString(3);
+                    laItem.ad_BannerPath = bannerPath + reader.GetString(2);
+                    laItem.ad_ImagePath = imagePath + reader.GetString(3);
                     la.Add(laItem);
                 }
                 conn.Close();
@@ -465,7 +467,7 @@ namespace VisoMenuAPI
             return la;
         }
 
-        public async Task UpdateAdViewed( int locationID, int _adID, ILogger logger)
+        public async Task UpdateAdViewed( string locationID, int _adID, ILogger logger)
         {
             
             //sp_UpdateViewedAd

@@ -14,11 +14,13 @@ namespace VisoMenuAPI.data
         public string AddtionalText1 { get; set; }
         public string AddtionalText2 { get; set; }
         public int menuSort { get; set; }
-        public int LocationID { get; set; }
+        //public int LocationID { get; set; }
         public string LocationName { get; set; }
         public string theme_name { get; set; }
         public string SubmenuText { get; set; }
         public int SubMenuSort { get; set; }
+        public string? subText1 { get; set; }
+        public string? subText2 { get; set; }
     }
     public class locationMenus
     {
@@ -41,12 +43,14 @@ namespace VisoMenuAPI.data
 
     public class vw_LocationsMenu
     {
-        public int LocationID { get; set; }
+        public string LocationID { get; set; }
         public string? LocationName { get; set; }
         public string? MenuText { get; set; }
-        public string? LineOne { get; set; }
-        public string? LineTwo { get; set; }
-        public string? InnerMenu { get; set; }
+        public string? menuLineOne { get; set; }
+        public string? menuLineTwo { get; set; }
+        public string? subMenu { get; set; }
+        public string? submenuLineOne { get; set; }
+        public string? submenuLineTwo { get; set; }
         public string? ItemName { get; set; }
         public string? description { get; set; }
         public string? price { get; set; }
