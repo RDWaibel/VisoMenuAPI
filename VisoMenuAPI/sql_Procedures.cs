@@ -264,7 +264,14 @@ namespace VisoMenuAPI
                             theItem.displayName = rdr.GetString(4);
                             theItem.description = rdr.GetString(5);
                             theItem.price = rdr.GetString(6);
-                            theItem.imagePath = rdr.GetString(7);
+                            if (rdr[6] != null)
+                            {
+                                theItem.imagePath = rdr.GetString(7);
+                            }
+                            else
+                            {
+                                theItem.imagePath = string.Empty;
+                            }
                             theItems.Add(theItem);
                         }
                     }
