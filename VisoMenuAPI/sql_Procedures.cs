@@ -264,7 +264,7 @@ namespace VisoMenuAPI
                             theItem.displayName = rdr.GetString(4);
                             theItem.description = rdr.GetString(5);
                             theItem.price = rdr.GetString(6);
-                            if (rdr[6] != null)
+                            if (rdr[7] != null)
                             {
                                 theItem.imagePath = rdr.GetString(7);
                             }
@@ -272,6 +272,7 @@ namespace VisoMenuAPI
                             {
                                 theItem.imagePath = string.Empty;
                             }
+                            theItem.HasImage = rdr.GetString(8);
                             theItems.Add(theItem);
                         }
                     }
