@@ -189,6 +189,7 @@ namespace VisoMenuAPI
                             menus.SubMenuSort = rdr.GetInt32(8);
                             menus.subText1 = rdr.GetString(9);
                             menus.subText2 = rdr.GetString(10);
+                            menus.buttonImagePath = rdr.GetString(11);
                             locMenus.Add(menus);
                         }
                     }

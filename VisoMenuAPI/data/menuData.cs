@@ -64,6 +64,7 @@ namespace VisoMenuAPI.data
         public string theme_name { get; set; }
         public int MenuItemID { get; set; }
         public int SubmenuID { get; set; }
+        public string buttonImagePath { get; set; } 
     }
 
     public class Menus
