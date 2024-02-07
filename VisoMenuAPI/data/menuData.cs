@@ -21,6 +21,8 @@ namespace VisoMenuAPI.data
         public int SubMenuSort { get; set; }
         public string? subText1 { get; set; }
         public string? subText2 { get; set; }
+        public string? buttonImagePath { get; set; }    
+
     }
     public class locationMenus
     {
@@ -80,6 +82,8 @@ namespace VisoMenuAPI.data
         public int MenuID { get; set; }
         public int SortOrder { get; set; }
         public string SubmenuText { get; set; }
+        public string? buttonImagePath { get; set; }
+
         //public List<MenuItems> _menuItems { get; set; } = new List<MenuItems>();
     }
     public class MenuItems

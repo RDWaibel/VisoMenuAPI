@@ -223,6 +223,7 @@ namespace VisoMenuAPI
                         subMenu.MenuID = rdr.GetInt32(1);
                         subMenu.SortOrder = rdr.GetInt32(2);
                         subMenu.SubmenuText = rdr.GetString(3);
+                        subMenu.buttonImagePath = rdr.GetString(4);
                         theSubMenus.Add(subMenu);
                     }
                 }
