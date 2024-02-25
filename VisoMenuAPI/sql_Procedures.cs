@@ -185,11 +185,12 @@ namespace VisoMenuAPI
                             menus.menuSort = rdr.GetInt32(4);
                             menus.LocationName = rdr.GetString(5);
                             menus.theme_name = rdr.GetString(6);
-                            menus.SubmenuText = rdr.GetString(7);
-                            menus.SubMenuSort = rdr.GetInt32(8);
-                            menus.subText1 = rdr.GetString(9);
-                            menus.subText2 = rdr.GetString(10);
-                            menus.buttonImagePath = rdr.GetString(11);
+                            menus.menuButtonImage = rdr.GetString(7);
+                            menus.SubmenuText = rdr.GetString(8);
+                            menus.SubMenuSort = rdr.GetInt32(9);
+                            menus.subText1 = rdr.GetString(10);
+                            menus.subText2 = rdr.GetString(11);
+                            menus.submenuButtonImage = rdr.GetString(12);
                             locMenus.Add(menus);
                         }
                     }
@@ -224,7 +225,7 @@ namespace VisoMenuAPI
                         subMenu.MenuID = rdr.GetInt32(1);
                         subMenu.SortOrder = rdr.GetInt32(2);
                         subMenu.SubmenuText = rdr.GetString(3);
-                        subMenu.buttonImagePath = rdr.GetString(4);
+                        subMenu.buttonImagePath = rdr.GetString(6);
                         theSubMenus.Add(subMenu);
                     }
                 }

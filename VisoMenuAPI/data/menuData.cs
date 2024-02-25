@@ -17,11 +17,12 @@ namespace VisoMenuAPI.data
         //public int LocationID { get; set; }
         public string LocationName { get; set; }
         public string theme_name { get; set; }
+        public string? menuButtonImage { get; set; }
         public string SubmenuText { get; set; }
         public int SubMenuSort { get; set; }
         public string? subText1 { get; set; }
         public string? subText2 { get; set; }
-        public string? buttonImagePath { get; set; }    
+        public string? submenuButtonImage { get; set; }    
 
     }
     public class locationMenus
