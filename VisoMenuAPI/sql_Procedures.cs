@@ -323,6 +323,7 @@ namespace VisoMenuAPI
                         }
                         item.price = rdr.GetString(5);
                         item.imagePath = rdr.GetString(6);
+                        item.HasImage = rdr.GetString(7);
                         rdr.Close();
                     }
                     else
@@ -343,18 +344,24 @@ namespace VisoMenuAPI
         {
             SqlCommand cmd = new SqlCommand();
             bool resultOfCall = false;
-            logger.LogInformation("saving the contact us information");
+            logger.LogInformation("Saving the contact us information");
             using(SqlConnection conn = new SqlConnection(cnSQL))
             {
-                string sSQL = $"Add_ContactUs '{contact.ContactName}', '{contact.email}', '{contact.message}', {contact.LocationID}";
-                int locID = int.Parse(contact.LocationID.ToString());
+                //string sSQL = $"Add_ContactUs '{contact.ContactName}', '{contact.email}', '{contact.message}', {contact.LocationID}";
+                string proc = "Add_ContactUs"; // @ContactName ,@Email ,@Message ,@LocationID ";
+                //int locID = int.Parse(contact.LocationID.ToString());
                 conn.Open();
                 logger.LogInformation("SQL connection open");
-                cmd.CommandText = sSQL;
+                cmd.CommandText = proc;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ContactName", contact.ContactName);
+                cmd.Parameters.AddWithValue("@Email", contact.email);
+                cmd.Parameters.AddWithValue("@Message", contact.message);
+                cmd.Parameters.AddWithValue("@LocationID", contact.LocationGUID);
                 cmd.Connection = conn;
                 try
                 {
-                    logger.LogInformation($"Sending to SQL {sSQL}");
+                    logger.LogInformation($"Sending to SQL Add_ContactUs");
                     await cmd.ExecuteNonQueryAsync();
                     resultOfCall = true;
                 }
@@ -403,6 +410,7 @@ namespace VisoMenuAPI
                             theItem.description = rdr.GetString(4);
                             theItem.price = rdr.GetString(5);
                             theItem.imagePath = rdr.GetString(6);
+                            theItem.HasImage = rdr.GetString(7);
                             theItems.Add(theItem);
                         }
                     }

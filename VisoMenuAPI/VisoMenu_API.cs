@@ -254,13 +254,23 @@ namespace VisoMenuAPI
         {
             log.LogInformation("Saving contact us info");
             sql_Procedures dta = new sql_Procedures();
-            Contact_Us myclass = await System.Text.Json.JsonSerializer.DeserializeAsync<Contact_Us>(req.Body);
+            Contact_Us _contactUs = await System.Text.Json.JsonSerializer.DeserializeAsync<Contact_Us>(req.Body);
 
             try
             {
                 log.LogInformation("Sending to SQL");
-                if (await dta.save_Contact_Us(myclass, log))
+                if (await dta.save_Contact_Us(_contactUs, log))
                 {
+                    log.LogInformation("Saved to SQL");
+                    try
+                    {
+                        EmailService emailService = new EmailService();
+                        await emailService.SendEmailBasic(_contactUs);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.LogError(ex, "Save contact us");
+                    }
                     return new OkResult();
                 }
                 else
