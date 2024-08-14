@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using VisoMenuAPI.data;
 
@@ -126,10 +127,10 @@ namespace VisoMenuAPI
                         a.LocationName = rdr.GetString(1);
                         a.MenuText = rdr.GetString(2);
                         a.menuLineOne = rdr.GetString(3);
-                        a.menuLineTwo = rdr.GetString(4);                        
+                        a.menuLineTwo = rdr.GetString(4);
                         a.subMenu = rdr.GetString(5);
                         a.submenuLineOne = rdr.GetString(6);
-                        a.submenuLineTwo =  rdr.GetString(7);
+                        a.submenuLineTwo = rdr.GetString(7);
                         a.ItemName = rdr.GetString(8);
                         a.description = rdr.GetString(9);
                         a.price = rdr.GetString(10);
@@ -295,7 +296,7 @@ namespace VisoMenuAPI
         {
             SqlCommand cmd = new SqlCommand();
             MenuItems item = new MenuItems();
-            logger.LogInformation("Looking for the item information");
+            logger.LogInformation($"Looking for item {_itemID} information");
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
                 await conn.OpenAsync();
@@ -313,7 +314,7 @@ namespace VisoMenuAPI
                         item.SubmenuID = rdr.GetInt32(1);
                         item.sortOrder = rdr.GetInt32(2);
                         item.displayName = rdr.GetString(3);
-                        if(rdr[4] == DBNull.Value)
+                        if (rdr[4] == DBNull.Value)
                         {
                             item.description = "";
                         }
@@ -324,8 +325,23 @@ namespace VisoMenuAPI
                         item.price = rdr.GetString(5);
                         item.imagePath = rdr.GetString(6);
                         item.HasImage = rdr.GetString(7);
+                        item.HasProfile = rdr.IsDBNull(8) ? "N" : rdr.GetString(8);
+                        item.Profile = new List<ItemProfile>();
+                        
+
+                        rdr.NextResult();
+                        while (rdr.Read())
+                        {
+                            item.Profile.Add(new ItemProfile
+                            {
+                                ItemID = rdr.GetInt32(0),
+                                AttribName = rdr.GetString(1),
+                                profile = rdr.GetString(2),
+                            });
+                        }
                         rdr.Close();
                     }
+
                     else
                     {
                         logger.LogError($"Item {_itemID} was not found!");
@@ -345,7 +361,7 @@ namespace VisoMenuAPI
             SqlCommand cmd = new SqlCommand();
             bool resultOfCall = false;
             logger.LogInformation("Saving the contact us information");
-            using(SqlConnection conn = new SqlConnection(cnSQL))
+            using (SqlConnection conn = new SqlConnection(cnSQL))
             {
                 //string sSQL = $"Add_ContactUs '{contact.ContactName}', '{contact.email}', '{contact.message}', {contact.LocationID}";
                 string proc = "Add_ContactUs"; // @ContactName ,@Email ,@Message ,@LocationID ";
@@ -368,12 +384,12 @@ namespace VisoMenuAPI
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "save_Contact_Us");
-                    resultOfCall= false;
+                    resultOfCall = false;
                 }
-                conn.Close ();
+                conn.Close();
 
             }
-            return resultOfCall;    
+            return resultOfCall;
         }
         /// <summary>
         /// Return a simple list of three recommendations
@@ -382,7 +398,7 @@ namespace VisoMenuAPI
         /// <param name="_menuItemID"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public async Task<List<MenuItems>> rtn_Recommendations (string _locID, int _menuItemID, ILogger logger)
+        public async Task<List<MenuItems>> rtn_Recommendations(string _locID, int _menuItemID, ILogger logger)
         {
             logger.LogInformation("Running sp_LocationRecommendations");
             string sql = $"sp_LocationRecommendations";
@@ -457,7 +473,7 @@ namespace VisoMenuAPI
 
         public async Task<List<LocationAds>> rtn_LocationAds(string locationID, ILogger logger)
         {
-            string bannerPath = System.Environment.GetEnvironmentVariable("bannerPath"); 
+            string bannerPath = System.Environment.GetEnvironmentVariable("bannerPath");
             string imagePath = System.Environment.GetEnvironmentVariable("imagePath");
 
             string cmdText = "sp_PullLocationBanners";
@@ -467,7 +483,7 @@ namespace VisoMenuAPI
             cmd.CommandText = cmdText;
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@LocationID", locationID);
-            using(SqlConnection conn = new SqlConnection(cnSQL))
+            using (SqlConnection conn = new SqlConnection(cnSQL))
             {
                 conn.Open();
                 cmd.Connection = conn;
@@ -486,9 +502,9 @@ namespace VisoMenuAPI
             return la;
         }
 
-        public async Task UpdateAdViewed( string locationID, int _adID, ILogger logger)
+        public async Task UpdateAdViewed(string locationID, int _adID, ILogger logger)
         {
-            
+
             //sp_UpdateViewedAd
             string cmdText = "sp_UpdateViewedAd";
             List<LocationAds> la = new List<LocationAds>();
@@ -507,5 +523,65 @@ namespace VisoMenuAPI
             }
         }
         #endregion
+
+        public async Task<List<string>> rtn_ProfileOptions (string locationID, ILogger logger)
+        {
+            List<string> availAttrib = new List<string>();
+            List<string> distinctItems;
+            string proc = "rtn_ProfileInfoForLocation";
+            using (SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(proc, conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@LocationGuid", locationID);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        availAttrib.Add(reader.GetString(2));
+                    }
+                    reader.Close();
+                    distinctItems = availAttrib
+                        .GroupBy(item => item)
+                        .Select(group => group.Key)
+                        .ToList();
+                }
+                conn.Close();
+            }
+            return distinctItems;
+        }
+        /// <summary>
+        /// This returns ALL of the Profile/Attribute data for a location
+        /// </summary>
+        /// <param name="locationID"></param>
+        /// <param name="logger"></param>
+        /// <returns> List<ItemProfileValues> </returns>
+        public async Task<List<ItemProfileValues>> rtn_AllProfileOptions(string locationID, ILogger logger)
+        {
+            List<ItemProfileValues> availAttrib = new List<ItemProfileValues>();
+            string proc = "rtn_ProfileInfoForLocation";
+            using (SqlConnection conn = new SqlConnection(cnSQL))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(proc, conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@LocationGuid", locationID);
+                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                    while (reader.Read())
+                    {
+                        availAttrib.Add(new ItemProfileValues { MenuItemID = reader.GetInt32(0),
+                        DisplayName=reader.GetString(1),
+                        AttribName=reader.GetString(2),
+                        ProfileText=reader.GetString(3)
+                        });
+                    }
+                    reader.Close();
+                }
+                conn.Close();
+            }
+            return availAttrib;
+        }
     }
 }

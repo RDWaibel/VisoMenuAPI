@@ -22,7 +22,7 @@ namespace VisoMenuAPI.data
         public int SubMenuSort { get; set; }
         public string? subText1 { get; set; }
         public string? subText2 { get; set; }
-        public string? submenuButtonImage { get; set; }    
+        public string? submenuButtonImage { get; set; }
 
     }
     public class locationMenus
@@ -39,9 +39,9 @@ namespace VisoMenuAPI.data
 
     public class menuData
     {
-        public int locationID {  get; set; }
+        public int locationID { get; set; }
         public List<Menus> menus { get; set; } = new List<Menus>();
-        
+
     }
 
     public class vw_LocationsMenu
@@ -61,11 +61,11 @@ namespace VisoMenuAPI.data
         public int menuSort { get; set; }
         public int subSort { get; set; }
         public int itemSort { get; set; }
-        public int MenuID { get; set; } 
+        public int MenuID { get; set; }
         public string theme_name { get; set; }
         public int MenuItemID { get; set; }
         public int SubmenuID { get; set; }
-        public string buttonImagePath { get; set; } 
+        public string buttonImagePath { get; set; }
     }
 
     public class Menus
@@ -99,5 +99,15 @@ namespace VisoMenuAPI.data
         public string? imagePath { get; set; }
         public string subMenuText { get; set; }
         public string HasImage { get; set; } = "N";
+        public string HasProfile { get; set; } = "N";
+        public List<ItemProfile> Profile { get; set; }
+    }
+
+    public class ItemProfile
+    {
+        public int ItemID { get; set; }
+        public string AttribName { get; set; }
+        public string profile { get; set; }
+
     }
 }

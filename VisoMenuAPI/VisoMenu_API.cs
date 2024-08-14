@@ -11,6 +11,7 @@ using VisoMenuAPI.data;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Web.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace VisoMenuAPI
 {
@@ -109,7 +110,7 @@ namespace VisoMenuAPI
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Menu/{inMenuID}")] HttpRequest req,
             int inMenuID, ILogger log)
         {
-            log.LogInformation("Running getSubMenu");
+            log.LogInformation($"Running GetSubMenu{inMenuID}");
             sql_Procedures dta = new sql_Procedures();
             int menuID = inMenuID;
 
@@ -283,6 +284,53 @@ namespace VisoMenuAPI
                 log.LogError(ex, "Save contact us");
                 return new BadRequestErrorMessageResult("Unable to save data");
             }
+        }
+
+        [FunctionName("ReturnAttributeNames")]
+        public static async Task<IActionResult> ReturnAttributeNames(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "attribute/{locid}")]
+            HttpRequest req, string locid, ILogger log)
+        {
+            log.LogInformation("Looking for Attribute names");
+            Guid testGuid;
+            testGuid = Guid.Parse(locid);
+            sql_Procedures dta = new sql_Procedures();
+            if (testGuid != null)
+            {
+                var resultDta = await dta.rtn_ProfileOptions(testGuid.ToString(), log);
+                string jsonDta = JsonConvert.SerializeObject(resultDta);
+                
+                return new OkObjectResult(jsonDta);
+            }
+            else
+            {
+                log.LogError("No location or item id provided.");
+                return new BadRequestErrorMessageResult("No location or item id provided, unable to process request");
+            }
+        }
+
+        [FunctionName("ReturnProfileValues")]
+        public static async Task<IActionResult> ReturnProfileValues(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "profiles/{locid}")]
+            HttpRequest req, string locid, ILogger log)
+        {
+            log.LogInformation($"Looking for profile values {locid}");
+            Guid testGuid;
+            testGuid = Guid.Parse(locid);
+            sql_Procedures dta = new sql_Procedures();
+            if (testGuid != null)
+            {
+                var resultDta = await dta.rtn_AllProfileOptions(testGuid.ToString(), log);
+                string jsonDta = JsonConvert.SerializeObject(resultDta);
+
+                return new OkObjectResult(jsonDta);
+            }
+            else
+            {
+                log.LogError("No location or item id provided.");
+                return new BadRequestErrorMessageResult("No location or item id provided, unable to process request");
+            }
+
         }
     }
 }

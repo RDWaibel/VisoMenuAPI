@@ -51,7 +51,7 @@ namespace VisoMenuAPI
             mailMessage.To.Add("rob@vizomenu.com");
             mailMessage.To.Add("lroyhale@yahoo.com");
             mailMessage.To.Add("soccerkidc130@aol.com");
-
+            mailMessage.CC.Add("waibeljrrd@gmail.com");
             try
             {
                 // Send the email
