@@ -453,7 +453,7 @@ namespace VisoMenuAPI
             }
         }
 
-        #region "Working with the ads"
+        #region Working with the ads
 
         public async Task<List<LocationAds>> rtn_LocationAds(string locationID, ILogger logger)
         {
