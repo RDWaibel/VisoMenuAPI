@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VisoMenuAPI.data;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Web.Http;
 
 namespace VisoMenuAPI
@@ -28,10 +26,6 @@ namespace VisoMenuAPI
             clientData theClient = await dta.GetClientData(clientID);
 
             string jsonDta = JsonConvert.SerializeObject(theClient);
-
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //dynamic data = JsonConvert.DeserializeObject(requestBody);
-            //name = name ?? data?.name;
 
             string responseMessage = string.IsNullOrEmpty(jsonDta)
                 ? "This HTTP triggered function executed successfully, however, no data was found."

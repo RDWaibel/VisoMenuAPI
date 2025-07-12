@@ -1,12 +1,10 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VisoMenuAPI.data;
 using System.Web.Http;
 
@@ -14,7 +12,7 @@ namespace VisoMenuAPI
 {
     public static class ARF
     {
-        [FunctionName("ARF")]
+        [FunctionName("ARFMessage")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "arf")] HttpRequest req,
             ILogger log)
