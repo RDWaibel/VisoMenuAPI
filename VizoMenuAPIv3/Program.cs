@@ -28,4 +28,10 @@ var host = new HostBuilder()
     })
     .Build();
 
+using (var scope = host.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<VizoMenuDbContext>();
+    await DbInitializer.SeedAsync(db);
+}
+
 host.Run();
