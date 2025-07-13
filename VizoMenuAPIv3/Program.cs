@@ -1,8 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
 using VizoMenuAPIv3.Data;
+using VizoMenuAPIv3.Services;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(config =>
@@ -16,18 +17,21 @@ var host = new HostBuilder()
         var connectionString = context.Configuration.GetConnectionString("VizoMenuDb");
 
         services.AddDbContext<VizoMenuDbContext>(options =>
-    options.UseSqlServer(connectionString, sqlOptions =>
-    {
-        sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorNumbersToAdd: null);
-    }));
+        options.UseSqlServer(connectionString, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
+        }));
 
+
+        services.AddSingleton<JwtService>(); 
         // Add any other services like logging here
     })
     .Build();
 
+    
 using (var scope = host.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<VizoMenuDbContext>();

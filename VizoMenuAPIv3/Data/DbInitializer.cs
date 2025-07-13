@@ -32,7 +32,14 @@ namespace VizoMenuAPIv3.Data
                 };
 
                 db.Users.Add(user);
-                await db.SaveChangesAsync();
+                try
+                {
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"DB Init failed: {ex.Message}");
+                }
             }
         }
     }

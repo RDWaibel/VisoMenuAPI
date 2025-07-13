@@ -12,5 +12,9 @@ public class User
     public DateTime EnteredUTC { get; set; }
     public Guid EnteredById { get; set; } // Initially could reference itself for SuperAdmin
     public User? EnteredBy { get; set; }
+    public bool IsEnabled { get; set; } = true;
+    public DateTime? DisabledUTC { get; set; }
+    public Guid? DisabledById { get; set; }
+
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }
