@@ -18,6 +18,8 @@ public class VizoMenuDbContext : DbContext
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<Venue> Venues => Set<Venue>();
+    public DbSet<VenueHour> VenueHours { get; set; }
+
     public DbSet<Site> Sites => Set<Site>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,9 +49,9 @@ public class VizoMenuDbContext : DbContext
         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes()
             .SelectMany(e => e.GetForeignKeys())
             .Where(fk => fk.PrincipalEntityType.ClrType == typeof(User)))
-                {
-                    foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
-                }
+        {
+            foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+        }
 
         //Seeds as required
         modelBuilder.Entity<Role>().HasData(
@@ -61,7 +63,34 @@ public class VizoMenuDbContext : DbContext
             new Role { Id = Guid.Parse("91AF38D4-7D3C-4286-B35D-184929DD4AE8"), Name = "SiteUser" }
         );
 
-    }
+        modelBuilder.Entity<Venue>(entity =>
+        {
+            entity.ToTable("Venues");
+            entity.HasKey(v => v.Id);
 
+            entity.Property(v => v.VenueName).IsRequired().HasMaxLength(200);
+            entity.Property(v => v.Location).HasMaxLength(300);
+
+            entity.HasOne(v => v.Organization)
+                  .WithMany(o => o.Venues)
+                  .HasForeignKey(v => v.OrganizationId);
+
+            entity.HasMany(v => v.Hours)
+                  .WithOne(h => h.Venue)
+                  .HasForeignKey(h => h.VenueId);
+        });
+
+        modelBuilder.Entity<VenueHour>(entity =>
+        {
+            entity.ToTable("VenueHours");
+            entity.HasKey(h => h.Id);
+
+            entity.Property(h => h.DayOfWeek).IsRequired();
+            entity.Property(h => h.OpenTime);
+            entity.Property(h => h.CloseTime);
+            entity.Property(h => h.IsClosed).IsRequired();
+        });
+    }
 }
+
 

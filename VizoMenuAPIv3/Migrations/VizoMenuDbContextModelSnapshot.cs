@@ -28,6 +28,12 @@ namespace VizoMenuAPIv3.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("DisabledById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DisabledUTC")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -41,6 +47,18 @@ namespace VizoMenuAPIv3.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InviteToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("InviteTokenExpires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -195,18 +213,66 @@ namespace VizoMenuAPIv3.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("DisabledById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DisabledUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EnteredById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EnteredUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Is24Hours")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("VenueName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Venues");
+                    b.ToTable("Venues", (string)null);
+                });
+
+            modelBuilder.Entity("VizoMenuAPIv3.Models.VenueHour", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan?>("CloseTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan?>("OpenTime")
+                        .HasColumnType("time");
+
+                    b.Property<Guid>("VenueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VenueId");
+
+                    b.ToTable("VenueHours", (string)null);
                 });
 
             modelBuilder.Entity("User", b =>
@@ -223,7 +289,7 @@ namespace VizoMenuAPIv3.Migrations
             modelBuilder.Entity("VizoMenuAPIv3.Models.Site", b =>
                 {
                     b.HasOne("VizoMenuAPIv3.Models.Venue", "Venue")
-                        .WithMany("Sites")
+                        .WithMany()
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -261,6 +327,17 @@ namespace VizoMenuAPIv3.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("VizoMenuAPIv3.Models.VenueHour", b =>
+                {
+                    b.HasOne("VizoMenuAPIv3.Models.Venue", "Venue")
+                        .WithMany("Hours")
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Venue");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
                     b.Navigation("UserRoles");
@@ -278,7 +355,7 @@ namespace VizoMenuAPIv3.Migrations
 
             modelBuilder.Entity("VizoMenuAPIv3.Models.Venue", b =>
                 {
-                    b.Navigation("Sites");
+                    b.Navigation("Hours");
                 });
 #pragma warning restore 612, 618
         }

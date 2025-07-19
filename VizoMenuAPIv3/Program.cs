@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using VizoMenuAPIv3.Data;
+using VizoMenuAPIv3.Functions;
 using VizoMenuAPIv3.Services;
 
 var host = new HostBuilder()
@@ -25,8 +26,9 @@ var host = new HostBuilder()
                 errorNumbersToAdd: null);
         }));
 
-
-        services.AddSingleton<JwtService>(); 
+        services.AddScoped<UserFunctions>();
+        services.AddSingleton<JwtService>();
+        services.AddSingleton<EmailService>();
         // Add any other services like logging here
     })
     .Build();

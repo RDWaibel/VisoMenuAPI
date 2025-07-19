@@ -12,6 +12,8 @@ using Newtonsoft.Json.Linq;
 
 using static VisoMenuAPI.controllers.emailService;
 using System.Net;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Configuration;
 
 namespace VisoMenuAPI
 {
@@ -21,23 +23,21 @@ namespace VisoMenuAPI
         private readonly string _smtpPort;
         private readonly string _smtpUser;
         private readonly string _smtpPass;
-
-        public EmailService()
+        private readonly IConfiguration _config;
+        public EmailService(IConfiguration config)
         {
-            _smtpServer = System.Environment.GetEnvironmentVariable("smtpServer");
-            _smtpPort = System.Environment.GetEnvironmentVariable("smtpPort");
-            _smtpUser = System.Environment.GetEnvironmentVariable("smtpUser");
-            _smtpPass = System.Environment.GetEnvironmentVariable("smtpPass");
+            _config = config;
+            _smtpServer = _config["MailJet:smtpServer"];
+            _smtpPort = _config["MailJet:smtpPort"];
+            _smtpUser = _config["MailJet:smtpUser"];
+            _smtpPass = _config["MailJet:smtpPass"];
         }
 
         public async Task SendEmailBasic(Contact_Us _cr)
         {
-            var mj1 = Environment.GetEnvironmentVariable("MJ_APIKEY_PUBLIC");
-            var mj2 = Environment.GetEnvironmentVariable("MJ_APIKEY_PRIVATE");
-
-            var smtpClient = new System.Net.Mail.SmtpClient("in.mailjet.com", 587)
+            var smtpClient = new System.Net.Mail.SmtpClient(_smtpServer, int.Parse(_smtpPort))
             {
-                Credentials = new NetworkCredential(mj1, mj2),
+                Credentials = new NetworkCredential(_smtpUser, _smtpPass),
                 EnableSsl = true
             };
             var mailMessage = new MailMessage
@@ -66,5 +66,66 @@ namespace VisoMenuAPI
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
+
+        public async Task SendEmailViaRestAsync(string toEmail, string toName, string subject, string htmlBody)
+        {
+            var publicApiKey = _config["MJ_APIKEY_PUBLIC"];
+            var privateApiKey = _config["MJ_APIKEY_PRIVATE"];
+
+            if (string.IsNullOrEmpty(publicApiKey) || string.IsNullOrEmpty(privateApiKey))
+            {
+                Console.WriteLine("Mailjet API keys are missing.");
+                return;
+            }
+
+            var payload = new
+            {
+                Messages = new[]
+                {
+            new
+            {
+                From = new
+                {
+                    Email = "noreply@vizomenu.com",
+                    Name = "VizoMenu"
+                },
+                To = new[]
+                {
+                    new { Email = toEmail, Name = toName }
+                },
+                Subject = subject,
+                HTMLPart = htmlBody
+            }
+        }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(payload);
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.mailjet.com/v3.1/send")
+            {
+                Headers =
+        {
+            Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Basic",
+                Convert.ToBase64String(Encoding.ASCII.GetBytes($"{publicApiKey}:{privateApiKey}"))
+            )
+        },
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            using var httpClient = new HttpClient();
+
+            var response = await httpClient.SendAsync(request);
+            var result = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Mailjet error: {response.StatusCode} - {result}");
+            }
+            else
+            {
+                Console.WriteLine("Email sent successfully via Mailjet REST API.");
+            }
+        }
+
     }
 }
