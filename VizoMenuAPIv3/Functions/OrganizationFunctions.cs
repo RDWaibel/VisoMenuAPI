@@ -20,6 +20,21 @@ public class OrganizationFunctions
         _jwt = jwt;
     }
 
+    [Function("GetOrganizationById")]
+    public async Task<HttpResponseData> GetOrganizationByIdAsync(
+    [HttpTrigger(AuthorizationLevel.Function, "get", Route = "organization/{id}")] HttpRequestData req,
+    Guid id,
+    FunctionContext context)
+    {
+        var org = await _db.Organizations.FindAsync(id);
+        if (org == null)
+            return req.CreateResponse(HttpStatusCode.NotFound);
+
+        var response = req.CreateResponse(HttpStatusCode.OK);
+        await response.WriteAsJsonAsync(org);
+        return response;
+    }
+
 
     [Function("GetOrganizations")]
     public async Task<HttpResponseData> GetOrganizationsAsync(

@@ -19,8 +19,8 @@ public class VizoMenuDbContext : DbContext
     public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<Venue> Venues => Set<Venue>();
     public DbSet<VenueHour> VenueHours { get; set; }
+    public DbSet<Site> Sites { get; set; }
 
-    public DbSet<Site> Sites => Set<Site>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,7 +90,11 @@ public class VizoMenuDbContext : DbContext
             entity.Property(h => h.CloseTime);
             entity.Property(h => h.IsClosed).IsRequired();
         });
-    }
+        modelBuilder.Entity<Site>()
+            .HasOne(s => s.Venue)
+            .WithMany(v => v.Sites)
+            .HasForeignKey(s => s.VenueId);
+        }
 }
 
 

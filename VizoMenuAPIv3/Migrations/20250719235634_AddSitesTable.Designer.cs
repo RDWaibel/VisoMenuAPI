@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VizoMenuAPIv3.Data;
 
@@ -11,9 +12,11 @@ using VizoMenuAPIv3.Data;
 namespace VizoMenuAPIv3.Migrations
 {
     [DbContext(typeof(VizoMenuDbContext))]
-    partial class VizoMenuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250719235634_AddSitesTable")]
+    partial class AddSitesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

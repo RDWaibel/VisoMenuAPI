@@ -21,5 +21,6 @@ namespace VizoMenuAPIv3.Models
 
         public Organization? Organization { get; set; }
         public ICollection<VenueHour> Hours { get; set; } = new List<VenueHour>();
+        public ICollection<Site> Sites { get; set; } = new List<Site>();
     }
 }

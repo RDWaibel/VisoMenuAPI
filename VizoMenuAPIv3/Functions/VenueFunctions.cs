@@ -129,5 +129,21 @@ namespace VizoMenuAPIv3.Functions
             await response.WriteAsJsonAsync(venue);
             return response;
         }
+
+        [Function("GetVenueById")]
+        public async Task<HttpResponseData> GetVenueById(
+    [HttpTrigger(AuthorizationLevel.Function, "get", Route = "venue/{venueId}")] HttpRequestData req,
+    Guid venueId)
+        {
+            var venue = await _db.Venues.FirstOrDefaultAsync(v => v.Id == venueId);
+
+            if (venue == null)
+                return req.CreateResponse(HttpStatusCode.NotFound);
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(venue);
+            return response;
+        }
+
     }
 }
