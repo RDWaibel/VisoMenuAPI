@@ -25,6 +25,16 @@ namespace VizoMenuAPIv3.Functions
         {
             var venues = await _db.Venues
                 .Where(v => v.OrganizationId == orgId && v.DisabledUTC == null)
+                .Select(v => new VenueDto
+                {
+                    Id = v.Id,
+                    VenueName = v.VenueName,
+                    Location = v.Location,
+                    Is24Hours = v.Is24Hours,
+                    OrganizationId = v.OrganizationId,
+                    SiteCount = v.Sites.Count(s => s.IsActive)
+                })
+                .OrderBy(v => v.VenueName)
                 .ToListAsync();
 
             var response = req.CreateResponse(HttpStatusCode.OK);

@@ -11,11 +11,13 @@ namespace VizoMenuAPIv3.Models
         public Guid Id { get; set; }
         public Guid VenueId { get; set; }
         public string SiteName { get; set; } = string.Empty;
-        public string? Description { get; set; }
+        public string? 
+            { get; set; }
         public Guid EnteredById { get; set; }
         public DateTime EnteredUTC { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
-
+        public Guid? ActiveChangedById { get; set; }
+        public DateTime? ActiveChangedUTC { get; set; }
         // Navigation
         public Venue Venue { get; set; } = null!;
     }
