@@ -55,7 +55,7 @@ namespace VizoMenuAPIv3.Functions
             newSite.Id = Guid.NewGuid();
             newSite.VenueId = venueId;
             newSite.EnteredUTC = DateTime.UtcNow;
-
+            
             _db.Sites.Add(newSite);
             await _db.SaveChangesAsync();
 
@@ -84,6 +84,7 @@ namespace VizoMenuAPIv3.Functions
             await response.WriteAsJsonAsync(site);
             return response;
         }
+
         [Function("ToggleSiteActive")]
         public async Task<HttpResponseData> ToggleSiteActive(
     [HttpTrigger(AuthorizationLevel.Function, "patch", Route = "sites/{siteId}/toggle")] HttpRequestData req,
@@ -92,14 +93,14 @@ namespace VizoMenuAPIv3.Functions
         {
             var logger = context.GetLogger("ToggleSiteActive");
             var body = await req.ReadFromJsonAsync<ToggleRequest>();
-            if (body == null || body.ChangedById == Guid.Empty)
+            if (body == null)
                 return req.CreateResponse(HttpStatusCode.BadRequest);
 
             var site = await _db.Sites.FindAsync(siteId);
             if (site == null) return req.CreateResponse(HttpStatusCode.NotFound);
 
             site.IsActive = !site.IsActive;
-            site.ActiveChangedById = body.ChangedById;
+            site.ActiveChangedBy = body.ChangedBy;
             site.ActiveChangedUTC = DateTime.UtcNow;
 
             await _db.SaveChangesAsync();
@@ -111,7 +112,7 @@ namespace VizoMenuAPIv3.Functions
 
         public class ToggleRequest
         {
-            public Guid ChangedById { get; set; }
+            public string ChangedBy{ get; set; }
         }
 
         [Function("GetSiteById")]
