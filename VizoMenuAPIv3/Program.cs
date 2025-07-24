@@ -29,7 +29,9 @@ var host = new HostBuilder()
         services.AddScoped<UserFunctions>();
         services.AddSingleton<JwtService>();
         services.AddSingleton<EmailService>();
-        // Add any other services like logging here
+        services.AddScoped<MenuFunctions>();
+        
+
     })
     .Build();
 

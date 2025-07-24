@@ -20,6 +20,7 @@ public class VizoMenuDbContext : DbContext
     public DbSet<Venue> Venues => Set<Venue>();
     public DbSet<VenueHour> VenueHours { get; set; }
     public DbSet<Site> Sites { get; set; }
+    public DbSet<Menu> Menus { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
