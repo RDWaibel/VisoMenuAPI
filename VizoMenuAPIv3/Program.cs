@@ -28,10 +28,12 @@ var host = new HostBuilder()
 
         services.AddSingleton<JwtService>();
         services.AddSingleton<EmailService>();
+        services.AddSingleton<AzureBlobService>();
 
         services.AddScoped<UserFunctions>();
         services.AddScoped<MenuFunctions>();
         services.AddScoped<ItemImportService>();
+        services.AddScoped<ImageImportService>();
 
     })
     .Build();

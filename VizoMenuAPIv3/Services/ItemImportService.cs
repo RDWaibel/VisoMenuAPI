@@ -25,22 +25,46 @@ public class ItemImportService
             MissingFieldFound = null
         });
 
+        csv.Read();
+        csv.ReadHeader();
+        Console.WriteLine("🧠 Header Record:");
+        foreach (var header in csv.HeaderRecord)
+        {
+            Console.WriteLine($"🔹 '{header}'");
+        }
+
         var records = csv.GetRecords<ImportItemDTO>();
         foreach (var dto in records)
         {
-            var item = new Item
+            try
             {
-                Id = Guid.NewGuid(),
-                BaseName = dto.BaseName,
-                Category = dto.Category,
-                ImageID = dto.ImageID
-            };
+                var item = new Item
+                {
+                    Id = Guid.NewGuid(),
+                    BaseName = dto.BaseName,
+                    Category = dto.Category,
+                    ImageID = dto.ImageID
+                };
 
-            importedItems.Add(item);
-            _db.Items.Add(item);
+                importedItems.Add(item);
+                _db.Items.Add(item);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error mapping record: {ex.Message}");
+                Console.WriteLine($"Raw Record: BaseName='{dto.BaseName}', Category='{dto.Category}', ImageId='{dto.ImageID}'");
+            }
         }
-
-        await _db.SaveChangesAsync();
-        return importedItems;
+        try
+        {
+            await _db.SaveChangesAsync();
+            Console.WriteLine($"✅ Saved {records.Count()} items.");
+            return importedItems;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"🔥 EF Save Error: {ex.Message}");
+            throw;
+        }
     }
 }

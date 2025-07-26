@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,52 +10,63 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using VizoMenuAPIv3.Data;
-using VizoMenuAPIv3.Models;
 using VizoMenuAPIv3.Services;
 
 namespace VizoMenuAPIv3.Functions
 {
-    public class ItemFunctions
+    public class ImageFunctions
     {
-
-        private readonly ItemImportService _itemImportService;
+        //same-o page-o™
+        private readonly ImageImportService _imageImportService;
         private readonly VizoMenuDbContext _db;
+        private readonly AzureBlobService _blobService;
 
-        public ItemFunctions(ItemImportService itemImportService, VizoMenuDbContext db)
+        public ImageFunctions(ImageImportService imageImportService, VizoMenuDbContext db, AzureBlobService blobService)
         {
-            _itemImportService = itemImportService;
+            _imageImportService = imageImportService;
             _db = db;
+            _blobService = blobService;
         }
 
-        [Function("GetItems")]
-        public async Task<HttpResponseData> GetItems(
-    [HttpTrigger(AuthorizationLevel.Function, "get", Route = "items")] HttpRequestData req,
+        [Function("GetImages")]
+        public async Task<HttpResponseData> GetImages(
+    [HttpTrigger(AuthorizationLevel.Function, "get", Route = "images")] HttpRequestData req,
     FunctionContext context)
         {
-            var items = await _db.Items
-                .OrderBy(i => i.BaseName)
-                .Select(i => new
-                {
-                    i.Id,
-                    i.BaseName,
-                    i.Category,
-                    i.ImageID
-                })
+            var query = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
+            string? container = query["container"];
+            string? path = query["path"];
+
+            var images = await _db.Images
+                .Where(i =>
+                    (container == null || i.BlobContainer == container) &&
+                    (path == null || i.ImagePath == path))
+                .OrderBy(i => i.FileName)
                 .ToListAsync();
 
             var response = req.CreateResponse(HttpStatusCode.OK);
-            await response.WriteAsJsonAsync(items);
+            var result = images.Select(i => new
+            {
+                i.ImageID,
+                i.Description,
+                i.BlobContainer,
+                i.ImagePath,
+                i.FileName,
+                ImageUrl = _blobService.GetImageUrl(i.BlobContainer, $"{i.ImagePath}/{i.FileName}")
+            });
+
+            await response.WriteAsJsonAsync(result);
             return response;
         }
 
 
-        #region Import Endpoints
-        [Function("ImportItems")]
-        public async Task<HttpResponseData> ImportItemsAsync(
-    [HttpTrigger(AuthorizationLevel.Function, "post", Route = "items/import")] HttpRequestData req,
+        #region CSV imports
+        [Function("ImportImages")]
+        public async Task<HttpResponseData> ImportImagesAsync(
+    [HttpTrigger(AuthorizationLevel.Function, "post", Route = "images/import")] HttpRequestData req,
     FunctionContext context)
         {
-            var logger = context.GetLogger("ImportItems");
+            var logger = context.GetLogger("ImportImages");
 
             try
             {
@@ -74,18 +85,11 @@ namespace VizoMenuAPIv3.Functions
                         await section.Body.CopyToAsync(stream);
                         stream.Position = 0;
 
-                        var importedItems = await _itemImportService.ImportItemsFromCsvAsync(stream);
-                        if(importedItems.Count == 0)
-                        {
-                            var responseNC = req.CreateResponse(HttpStatusCode.NoContent);
-                            return responseNC;
-                        }
-                        else { 
-                            var response = req.CreateResponse(HttpStatusCode.OK);
-                            await response.WriteAsJsonAsync(importedItems);
-                            return response;
-                        }
-                        
+                        var importedImages = await _imageImportService.ImportImagesFromCsvAsync(stream);
+
+                        var response = req.CreateResponse(HttpStatusCode.OK);
+                        await response.WriteAsJsonAsync(importedImages);
+                        return response;
                     }
                 }
 
@@ -95,14 +99,12 @@ namespace VizoMenuAPIv3.Functions
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "CSV import failed.");
+                logger.LogError(ex, "CSV image import failed.");
                 var error = req.CreateResponse(HttpStatusCode.InternalServerError);
                 await error.WriteStringAsync("Import failed: " + ex.Message);
                 return error;
             }
         }
-
-
 
         #endregion
     }

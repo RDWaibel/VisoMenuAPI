@@ -11,5 +11,6 @@ namespace VizoMenuAPIv3.Models.Import
         public string BaseName { get; set; } = string.Empty;
         public string? Category { get; set; } = string.Empty;
         public Guid? ImageID { get; set; }
+
     }
 }
