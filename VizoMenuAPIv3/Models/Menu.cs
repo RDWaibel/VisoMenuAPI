@@ -25,6 +25,7 @@ namespace VizoMenuAPIv3.Models
 
         public Guid? ButtonImageId { get; set; }
 
+
         // Navigation
         public Site Site { get; set; } = null!;
     }
