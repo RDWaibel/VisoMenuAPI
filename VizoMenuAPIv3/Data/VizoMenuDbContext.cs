@@ -21,6 +21,8 @@ public class VizoMenuDbContext : DbContext
     public DbSet<VenueHour> VenueHours { get; set; }
     public DbSet<Site> Sites { get; set; }
     public DbSet<Menu> Menus { get; set; }
+    public DbSet<Item> Items { get; set; }
+    public DbSet<Image> Images { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,7 +97,15 @@ public class VizoMenuDbContext : DbContext
             .HasOne(s => s.Venue)
             .WithMany(v => v.Sites)
             .HasForeignKey(s => s.VenueId);
-        }
+
+        modelBuilder.Entity<Item>()
+            .HasOne(i => i.Image)
+            .WithMany(img => img.Items)
+            .HasForeignKey(i => i.ImageID)
+            .OnDelete(DeleteBehavior.SetNull); // or Restrict
+    }
+    
+
 }
 
 

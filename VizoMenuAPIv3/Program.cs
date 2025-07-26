@@ -26,11 +26,12 @@ var host = new HostBuilder()
                 errorNumbersToAdd: null);
         }));
 
-        services.AddScoped<UserFunctions>();
         services.AddSingleton<JwtService>();
         services.AddSingleton<EmailService>();
+
+        services.AddScoped<UserFunctions>();
         services.AddScoped<MenuFunctions>();
-        
+        services.AddScoped<ItemImportService>();
 
     })
     .Build();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VizoMenuAPIv3.Data;
 
@@ -11,9 +12,11 @@ using VizoMenuAPIv3.Data;
 namespace VizoMenuAPIv3.Migrations
 {
     [DbContext(typeof(VizoMenuDbContext))]
-    partial class VizoMenuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250726170258_AddItemandImageTables")]
+    partial class AddItemandImageTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,6 +120,7 @@ namespace VizoMenuAPIv3.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Category")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("ImageID")
