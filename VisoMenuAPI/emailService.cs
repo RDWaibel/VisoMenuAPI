@@ -24,13 +24,14 @@ namespace VisoMenuAPI
         private readonly string _smtpUser;
         private readonly string _smtpPass;
         private readonly IConfiguration _config;
-        public EmailService(IConfiguration config)
+        public EmailService()
         {
-            _config = config;
-            _smtpServer = _config["MailJet:smtpServer"];
-            _smtpPort = _config["MailJet:smtpPort"];
-            _smtpUser = _config["MailJet:smtpUser"];
-            _smtpPass = _config["MailJet:smtpPass"];
+
+
+            _smtpServer = "in.mailjet.com";
+            _smtpPort = "587";
+            _smtpUser = "apikey";
+            _smtpPass = "a7c565b2790d0fd6c42f437199ba85d0";
         }
 
         public async Task SendEmailBasic(Contact_Us _cr)
