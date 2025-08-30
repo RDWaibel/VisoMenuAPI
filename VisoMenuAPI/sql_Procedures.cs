@@ -110,7 +110,7 @@ namespace VisoMenuAPI
         /// <returns></returns>
         public async Task<List<vw_LocationsMenu>> GetLocationMenu(string LocationID)
         {
-            string sql = $"sp_LocationMenu '{LocationID}'";
+            string sql = $"sp.LocationMenu '{LocationID}'";
             List<vw_LocationsMenu> theMenu = new List<vw_LocationsMenu>();
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
