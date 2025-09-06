@@ -46,7 +46,7 @@ namespace VisoMenuAPI
                 From = new MailAddress("rob@vizomenu.com"),
                 Subject = "Vizomenu Contact Form",
                 IsBodyHtml = true,
-                Body = $"<b>NAME </b> {_cr.ContactName}<br/>  <b>EMAIL </b> {_cr.email} <br/> {_cr.message}"
+                Body = $"<b>NAME </b> {_cr.contactName}<br/>  <b>EMAIL </b> {_cr.email} <br/> {_cr.message}"
             };
             mailMessage.To.Add("anthony@vizomenu.com");
             mailMessage.To.Add("rob@vizomenu.com");

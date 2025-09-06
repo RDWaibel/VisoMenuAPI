@@ -109,7 +109,7 @@ namespace VisoMenuAPI
 
             if (menuID > 0)
             {
-                List<SubMenus> locMenu = await dta.rtn_SubMenus(menuID);
+                List<SubMenuDTO> locMenu = await dta.GetLocationSubMenusAsync(menuID);
 
                 string jsonDta = JsonConvert.SerializeObject(locMenu);
                 string responseMessage = string.IsNullOrEmpty(jsonDta)
@@ -136,7 +136,7 @@ namespace VisoMenuAPI
 
             if (menuID > 0)
             {
-                List<MenuItems> locMenu = await dta.rtn_MenuItems(menuID, log);
+                List<MenuItems> locMenu = await dta.GetSubMenuItemsAsync(menuID, log);
 
                 string jsonDta = JsonConvert.SerializeObject(locMenu);
                 string responseMessage = string.IsNullOrEmpty(jsonDta)

@@ -31,7 +31,8 @@ namespace VisoMenuAPI
                 return new InternalServerErrorResult();
             }
 
-            return new OkResult();
+            //return new OkResult();
+            return new OkObjectResult("Message saved");
         }
     }
 }
