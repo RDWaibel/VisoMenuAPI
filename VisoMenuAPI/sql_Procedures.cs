@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using VisoMenuAPI.data;
+using VizoMenuAPI.Extensions;
 
 namespace VisoMenuAPI
 {
@@ -110,7 +112,7 @@ namespace VisoMenuAPI
         /// <returns></returns>
         public async Task<List<vw_LocationsMenu>> GetLocationMenu(string LocationID)
         {
-            string sql = $"sp_LocationMenu '{LocationID}'";
+            string sql = $"sp.LocationMenu '{LocationID}'";
             List<vw_LocationsMenu> theMenu = new List<vw_LocationsMenu>();
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
@@ -120,6 +122,7 @@ namespace VisoMenuAPI
                 SqlDataReader rdr = await cmd.ExecuteReaderAsync();
                 if (rdr.HasRows)
                 {
+                    int themeNameOrdinal = rdr.GetOrdinal("theme_name");
                     while (rdr.Read())
                     {
                         vw_LocationsMenu a = new vw_LocationsMenu();
@@ -139,7 +142,7 @@ namespace VisoMenuAPI
                         a.subSort = rdr.GetInt32(13);
                         a.itemSort = rdr.GetInt32(14);
                         a.MenuID = rdr.GetInt32(15);
-                        a.theme_name = rdr.GetString(16);
+                        a.theme_name = rdr.IsDBNull(themeNameOrdinal) ? string.Empty : rdr.GetString(themeNameOrdinal);
                         a.MenuItemID = rdr.GetInt32(17);
                         a.SubmenuID = rdr.GetInt32(18);
                         theMenu.Add(a);
@@ -175,6 +178,7 @@ namespace VisoMenuAPI
                     SqlDataReader rdr = await cmd.ExecuteReaderAsync();
                     if (rdr.HasRows)
                     {
+                        int themeNameOrdinal = rdr.GetOrdinal("theme_name");
                         while (rdr.Read())
                         {
                             locationMenuSubMenu menus = new locationMenuSubMenu();
@@ -185,7 +189,7 @@ namespace VisoMenuAPI
                             menus.AddtionalText2 = rdr.GetString(3);
                             menus.menuSort = rdr.GetInt32(4);
                             menus.LocationName = rdr.GetString(5);
-                            menus.theme_name = rdr.GetString(6);
+                            menus.theme_name = rdr.IsDBNull(themeNameOrdinal) ? string.Empty : rdr.GetString(themeNameOrdinal);
                             menus.menuButtonImage = rdr.GetString(7);
                             menus.SubmenuText = rdr.GetString(8);
                             menus.SubMenuSort = rdr.GetInt32(9);
@@ -207,33 +211,37 @@ namespace VisoMenuAPI
             return locMenus;
 
         }
-        public async Task<List<SubMenus>> rtn_SubMenus(int _menuID)
+        public async Task<List<SubMenuDTO>> GetLocationSubMenusAsync(int menuId)
         {
-            string SQL = $"rtn_LocationSubMenu {_menuID}";
-            List<SubMenus> theSubMenus = new List<SubMenus>();
-            using (SqlConnection conn = new SqlConnection(cnSQL))
+            var results = new List<SubMenuDTO>();
+
+            using var cn = new SqlConnection(cnSQL);
+            using var cmd = new SqlCommand("dbo.rtn_LocationSubMenu", cn) { CommandType = CommandType.StoredProcedure };
+            cmd.Parameters.AddWithValue("@MenuID", menuId);
+
+            await cn.OpenAsync();
+            using var rdr = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+
+            while (await rdr.ReadAsync())
             {
-                conn.Open();
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = SQL;
-                SqlDataReader rdr = await cmd.ExecuteReaderAsync();
-                if (rdr.HasRows)
+                var dto = new SubMenuDTO
                 {
-                    while (rdr.Read())
-                    {
-                        SubMenus subMenu = new SubMenus();
-                        subMenu.SubmenuID = rdr.GetInt32(0);
-                        subMenu.MenuID = rdr.GetInt32(1);
-                        subMenu.SortOrder = rdr.GetInt32(2);
-                        subMenu.SubmenuText = rdr.GetString(3);
-                        subMenu.buttonImagePath = rdr.GetString(6);
-                        theSubMenus.Add(subMenu);
-                    }
-                }
-                rdr.Close();
-                conn.Close();
+                    SubmenuID = rdr.GetSafeInt(0),
+                    MenuID = rdr.GetSafeInt(1),
+                    ParentSubmenuID = rdr.IsDBNull(2) ? (int?)null : rdr.GetInt32(2),
+                    SortOrder = rdr.GetSafeInt(3),
+                    SubmenuText = rdr.GetSafeString(4),
+                    AdditionalText1 = rdr.GetSafeString(5),
+                    AdditionalText2 = rdr.GetSafeString(6),
+                    ButtonImagePath = rdr.GetSafeString(7),
+                    Tier = rdr.GetSafeInt(8),
+                    SortPath = rdr.GetSafeString(9)
+                };
+
+                results.Add(dto);
             }
-            return theSubMenus;
+
+            return results;
         }
         /// <summary>
         /// Pulls all of the items based on the submenuID
@@ -241,7 +249,7 @@ namespace VisoMenuAPI
         /// <param name="_subMenuID"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public async Task<List<MenuItems>> rtn_MenuItems(int _subMenuID, ILogger logger)
+        public async Task<List<MenuItems>> GetSubMenuItemsAsync(int _subMenuID, ILogger logger)
         {
             logger.LogInformation("Running rtn_MenuItems");
             string sql = $"rtn_SubMenuItems";
@@ -363,17 +371,15 @@ namespace VisoMenuAPI
             logger.LogInformation("Saving the contact us information");
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
-                //string sSQL = $"Add_ContactUs '{contact.ContactName}', '{contact.email}', '{contact.message}', {contact.LocationID}";
                 string proc = "Add_ContactUs"; // @ContactName ,@Email ,@Message ,@LocationID ";
-                //int locID = int.Parse(contact.LocationID.ToString());
                 conn.Open();
                 logger.LogInformation("SQL connection open");
                 cmd.CommandText = proc;
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ContactName", contact.ContactName);
+                cmd.Parameters.AddWithValue("@ContactName", contact.contactName);
                 cmd.Parameters.AddWithValue("@Email", contact.email);
                 cmd.Parameters.AddWithValue("@Message", contact.message);
-                cmd.Parameters.AddWithValue("@LocationID", contact.LocationGUID);
+                cmd.Parameters.AddWithValue("@LocationID", contact.locationGUID);
                 cmd.Connection = conn;
                 try
                 {
@@ -469,7 +475,7 @@ namespace VisoMenuAPI
             }
         }
 
-        #region "Working with the ads"
+        #region Working with the ads
 
         public async Task<List<LocationAds>> rtn_LocationAds(string locationID, ILogger logger)
         {

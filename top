@@ -1,0 +1,137 @@
+[33mcommit 4dd19cac5c2ec0585db3bc86cc58d020492de517[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Wed Aug 14 11:24:39 2024 -0700
+
+    Added attributes and profile text
+
+[33mcommit 9eb56972e0a5da97bd65c70351f9a762dd81bad6[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Tue Aug 6 11:21:23 2024 -0700
+
+    now emails via mailjet
+
+[33mcommit cd66892bb72ad4d05901da4b4984b0bc3bcc4349[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Feb 25 12:36:15 2024 -0700
+
+    a few updated
+
+[33mcommit 2ffc7f4d301866f21b6d79e0682d82f35c7c7406[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Wed Feb 7 06:35:34 2024 -0700
+
+    buttonImagePath
+
+[33mcommit 63afc02b050ded9c69bef6a8decae16955623db4[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Wed Feb 7 06:01:58 2024 -0700
+
+    new image paths
+
+[33mcommit 73dbf554e87ae353aeebbf13c42699b927c95103[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Thu Aug 24 17:21:19 2023 -0700
+
+    Added endpoint for ARF messages.
+
+[33mcommit 427cce19899c8f473d47ccd665740dec49045824[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Wed Aug 9 16:58:58 2023 -0700
+
+    added HasImage
+
+[33mcommit 155ba761e39a11c1175417408d555b1f5523f49f[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sat Aug 5 14:51:32 2023 -0700
+
+    additional fixes for null
+
+[33mcommit 8a21a636dcd4ece74c17fc4d25d52fa245fd0c7c[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sat Jul 29 12:12:57 2023 -0700
+
+    Now using GUID for location id, updated all api's with teh locid requirement
+
+[33mcommit af2352ae0885c566bda09f8bdfdb12d4dad5a915[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Thu Jul 13 19:18:15 2023 -0700
+
+    Correction to UpdateMenuItemViewed
+
+[33mcommit 7073fd0e26287c9967d5148ebeeb765989d42c3f[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Wed Jul 12 15:14:38 2023 -0700
+
+    Added string field to MenuItems
+
+[33mcommit 09c860b9b5141b3308db95505260692d26b14c59[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Jul 9 17:53:56 2023 -0700
+
+    Coding updates from Adam
+
+[33mcommit c0e17ad7643a38e6d78721daeb5fa9bfb3357dce[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Jun 25 12:25:11 2023 -0700
+
+    additional development notes
+
+[33mcommit 60ec022451d46ed974952598460aeb03c9acd578[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Jun 25 12:21:41 2023 -0700
+
+    Added return adds, add clicked and item viewed
+
+[33mcommit 3852ccd5ac3aba2edf4824800d29b2657ef8164b[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Jun 25 07:45:39 2023 -0700
+
+    Recommendtions logging corrections
+
+[33mcommit ca6e37f7c136978772f9e2643b6e53159f487028[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Jun 25 07:44:10 2023 -0700
+
+    recommendation tuning
+
+[33mcommit ac5afbb2659fc0ea57e38814adfe32cf47adc4c7[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Jun 25 07:42:14 2023 -0700
+
+    Recommendation code
+
+[33mcommit 40acdcef64069e4555add2db5ccf6aa6f3d6c1e3[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Jun 25 07:23:26 2023 -0700
+
+    Tuning for Adam
+
+[33mcommit 305d5f64802ca052e81e4da3c2efd68bfceedd45[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Fri Jun 23 06:49:55 2023 -0700
+
+    theme_name - Ready for release
+
+[33mcommit 31e48996f1a0d31be545450d4bb9a9acf784940b[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Wed May 31 07:16:12 2023 -0700
+
+    Opened up Client pull and Location Menu
+
+[33mcommit ed918817bbf45faa3c856c337ed3794b5428ae07[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Apr 30 12:14:47 2023 -0700
+
+    r-waibel  added two new functions and
+
+[33mcommit 79eedbe36deaa7027dc88deade926357a4b749bd[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Apr 30 09:00:39 2023 -0700
+
+    Add project files.
+
+[33mcommit b5cd87a5c3b11e5069c3294b9cc10f39c8748567[m
+Author: Rob Waibel Jr <waibeljrrd@gmail.com>
+Date:   Sun Apr 30 09:00:36 2023 -0700
+
+    Add .gitattributes and .gitignore.

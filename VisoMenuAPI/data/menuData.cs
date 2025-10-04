@@ -78,16 +78,7 @@ namespace VisoMenuAPI.data
         public int LocationID { get; set; }
         public List<SubMenus> _subMenus { get; set; } = new List<SubMenus>();
     }
-    public class SubMenus
-    {
-        public int SubmenuID { get; set; }
-        public int MenuID { get; set; }
-        public int SortOrder { get; set; }
-        public string SubmenuText { get; set; }
-        public string? buttonImagePath { get; set; }
-
-        //public List<MenuItems> _menuItems { get; set; } = new List<MenuItems>();
-    }
+    
     public class MenuItems
     {
         public int MenuItemID { get; set; }

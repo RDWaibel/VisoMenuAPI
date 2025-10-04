@@ -52,11 +52,10 @@ namespace VisoMenuAPI.data
 
     public class Contact_Us
     {
-        public string ContactName { get; set; }
+        public string contactName { get; set; }
         public string email { get; set; }
         public string message { get; set; }
-        public string LocationID { get; set; }
-        public string LocationGUID { get; set; }
+        public string locationGUID { get; set; }
 
     }
 }
