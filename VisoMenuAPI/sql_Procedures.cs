@@ -114,46 +114,88 @@ namespace VisoMenuAPI
         {
             string sql = $"sp.LocationMenu '{LocationID}'";
             List<vw_LocationsMenu> theMenu = new List<vw_LocationsMenu>();
+
             using (SqlConnection conn = new SqlConnection(cnSQL))
             {
-                conn.Open();
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = sql;
-                SqlDataReader rdr = await cmd.ExecuteReaderAsync();
-                if (rdr.HasRows)
+                await conn.OpenAsync();
+                using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    int themeNameOrdinal = rdr.GetOrdinal("theme_name");
-                    while (rdr.Read())
+                    cmd.CommandText = sql;
+
+                    using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
                     {
-                        vw_LocationsMenu a = new vw_LocationsMenu();
-                        a.LocationID = rdr.GetString(0);
-                        a.LocationName = rdr.GetString(1);
-                        a.MenuText = rdr.GetString(2);
-                        a.menuLineOne = rdr.GetString(3);
-                        a.menuLineTwo = rdr.GetString(4);
-                        a.subMenu = rdr.GetString(5);
-                        a.submenuLineOne = rdr.GetString(6);
-                        a.submenuLineTwo = rdr.GetString(7);
-                        a.ItemName = rdr.GetString(8);
-                        a.description = rdr.GetString(9);
-                        a.price = rdr.GetString(10);
-                        a.imagePath = rdr.GetString(11);
-                        a.menuSort = rdr.GetInt32(12);
-                        a.subSort = rdr.GetInt32(13);
-                        a.itemSort = rdr.GetInt32(14);
-                        a.MenuID = rdr.GetInt32(15);
-                        a.theme_name = rdr.IsDBNull(themeNameOrdinal) ? string.Empty : rdr.GetString(themeNameOrdinal);
-                        a.MenuItemID = rdr.GetInt32(17);
-                        a.SubmenuID = rdr.GetInt32(18);
-                        theMenu.Add(a);
+                        if (rdr.HasRows)
+                        {
+                            // Existing ordinal by name
+                            int themeNameOrdinal = rdr.GetOrdinal("theme_name");
+
+                            // NEW ordinals for extra columns in vw.LocationsMenu
+                            int buttonImagePathOrdinal = rdr.GetOrdinal("buttonImagePath");
+                            int colorSchemeIdOrdinal = rdr.GetOrdinal("ColorSchemeId");
+                            int colorSchemeNameOrdinal = rdr.GetOrdinal("ColorSchemeName");
+                            int htmlColor1Ordinal = rdr.GetOrdinal("HtmlColor1");
+                            int htmlColor2Ordinal = rdr.GetOrdinal("HtmlColor2");
+                            int htmlColor3Ordinal = rdr.GetOrdinal("HtmlColor3");
+
+                            while (await rdr.ReadAsync())
+                            {
+                                vw_LocationsMenu a = new vw_LocationsMenu
+                                {
+                                    LocationID = rdr.GetString(0),
+                                    LocationName = rdr.GetString(1),
+                                    MenuText = rdr.GetString(2),
+                                    menuLineOne = rdr.GetString(3),
+                                    menuLineTwo = rdr.GetString(4),
+                                    subMenu = rdr.GetString(5),
+                                    submenuLineOne = rdr.GetString(6),
+                                    submenuLineTwo = rdr.GetString(7),
+                                    ItemName = rdr.GetString(8),
+                                    description = rdr.GetString(9),
+                                    price = rdr.GetString(10),
+                                    imagePath = rdr.GetString(11),
+                                    menuSort = rdr.GetInt32(12),
+                                    subSort = rdr.GetInt32(13),
+                                    itemSort = rdr.GetInt32(14),
+                                    MenuID = rdr.GetInt32(15),
+                                    theme_name = rdr.IsDBNull(themeNameOrdinal)
+                                                        ? string.Empty
+                                                        : rdr.GetString(themeNameOrdinal),
+                                    MenuItemID = rdr.GetInt32(17),
+                                    SubmenuID = rdr.GetInt32(18),
+
+                                    // NEW: button image path
+                                    buttonImagePath = rdr.IsDBNull(buttonImagePathOrdinal)
+                                                        ? string.Empty
+                                                        : rdr.GetString(buttonImagePathOrdinal),
+
+                                    // NEW: color scheme fields
+                                    ColorSchemeId = rdr.IsDBNull(colorSchemeIdOrdinal)
+                                                        ? (int?)null
+                                                        : rdr.GetInt32(colorSchemeIdOrdinal),
+                                    ColorSchemeName = rdr.IsDBNull(colorSchemeNameOrdinal)
+                                                        ? null
+                                                        : rdr.GetString(colorSchemeNameOrdinal),
+                                    HtmlColor1 = rdr.IsDBNull(htmlColor1Ordinal)
+                                                        ? null
+                                                        : rdr.GetString(htmlColor1Ordinal),
+                                    HtmlColor2 = rdr.IsDBNull(htmlColor2Ordinal)
+                                                        ? null
+                                                        : rdr.GetString(htmlColor2Ordinal),
+                                    HtmlColor3 = rdr.IsDBNull(htmlColor3Ordinal)
+                                                        ? null
+                                                        : rdr.GetString(htmlColor3Ordinal)
+                                };
+
+                                theMenu.Add(a);
+                            }
+                        }
                     }
                 }
-                rdr.Close();
-                cmd.Dispose();
-                conn.Close();
             }
+
             return theMenu;
         }
+
 
         /// <summary>
         /// returns the top level menues for the location

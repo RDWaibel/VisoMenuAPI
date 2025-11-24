@@ -66,7 +66,15 @@ namespace VisoMenuAPI.data
         public int MenuItemID { get; set; }
         public int SubmenuID { get; set; }
         public string buttonImagePath { get; set; }
+
+        // ✅ NEW Color Scheme Fields
+        public int? ColorSchemeId { get; set; }
+        public string? ColorSchemeName { get; set; }
+        public string? HtmlColor1 { get; set; }
+        public string? HtmlColor2 { get; set; }
+        public string? HtmlColor3 { get; set; }
     }
+
 
     public class Menus
     {
